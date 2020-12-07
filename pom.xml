@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.pixelcat</groupId>
+    <artifactId>pixelcat-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>pixelcat-spring-boot-starter</module>
+        <module>pixelcat-spring-boot-autoconfigure</module>
+        <module>pixelcat-core</module>
+    </modules>
+
+    <properties>
+        <spring-boot>2.3.5.RELEASE</spring-boot>
+        <spring-boot-autoconfigure>2.3.5.RELEASE</spring-boot-autoconfigure>
+        <curator-recipes>4.3.0</curator-recipes>
+        <lombok>1.18.16</lombok>
+        <mysql>5.1.49</mysql>
+        <logback>1.2.3</logback>
+        <slf4j>1.7.25</slf4j>
+        <okhttp>4.9.0</okhttp>
+    </properties>
+
+   <dependencies>
+       <dependency>
+           <groupId>org.projectlombok</groupId>
+           <artifactId>lombok</artifactId>
+           <version>${lombok}</version>
+           <scope>provided</scope>
+       </dependency>
+
+       <dependency>
+           <groupId>ch.qos.logback</groupId>
+           <artifactId>logback-classic</artifactId>
+           <version>${logback}</version>
+       </dependency>
+
+       <dependency>
+           <groupId>org.slf4j</groupId>
+           <artifactId>slf4j-api</artifactId>
+           <version>${slf4j}</version>
+       </dependency>
+
+   </dependencies>
+
+</project>
