@@ -90,6 +90,14 @@
                   >
                     删除
                   </v-btn>
+                  <v-btn
+                          small
+                          dark
+                          class="ml-2 mb-2"
+                          @click="init()"
+                  >
+                    刷新
+                  </v-btn>
                   <v-dialog v-model="dialogDelete" max-width="500px">
                     <v-card>
                       <v-card-title class="headline">确定删除选中项目？</v-card-title>
@@ -129,7 +137,7 @@
                         color="green"
                         dark
                         class="mr-2"
-                        @click="manageEnv(item)"
+                        @click="openEnv(item.name)"
                 >
                   管理环境
                 </v-btn>
@@ -159,81 +167,16 @@
           </template>
         </v-snackbar>
         <!--修改环境-->
-        <v-navigation-drawer
-                v-model="envDrawer"
-                absolute
-                right
-                temporary
-                width="400"
-        >
-          <v-list-item>
-            <v-btn dark small @click="addEnv" color="blue darken-1">
-              <v-icon small>fa-plus</v-icon>
-              新增环境
-            </v-btn>
-          </v-list-item>
-
-          <v-divider></v-divider>
-
-          <v-list dense>
-            <v-list-item
-                    dense
-                    v-for="item in envList"
-                    :key="item.name"
-            >
-              <v-list-item-content>
-                <v-text-field
-                        class="mr-12"
-                        :rules="envRules"
-                        :value="item.name"
-                        :readonly="!item.edit"
-                        :loading="!item.edit"
-                >
-                  <template v-slot:progress>
-                    <v-progress-linear absolute height="0"></v-progress-linear>
-                  </template>
-                  <template v-slot:append>
-                    <div v-if="item.edit">
-                      <v-btn icon small @click="item.edit = false">
-                        <v-icon small color="green">fa-check</v-icon>
-                      </v-btn>
-                      <v-btn icon small @click="item.edit = false">
-                        <v-icon small color="red">fa-times</v-icon>
-                      </v-btn>
-                    </div>
-                  </template>
-                </v-text-field>
-              </v-list-item-content>
-              <v-list-item-action-text>
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon small v-bind="attrs" v-on="on" class="mr-2" @click="item.edit = true">
-                      <v-icon small color="green lighten-1">fa-pencil</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>修改</span>
-                </v-tooltip>
-
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon small v-bind="attrs" v-on="on">
-                      <v-icon small color="red lighten-1">fa-trash</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>删除</span>
-                </v-tooltip>
-              </v-list-item-action-text>
-            </v-list-item>
-          </v-list>
-        </v-navigation-drawer>
+        <env-dialog :env-dialog="envDialog" @close="envDialog = false" :current-project="currentProject" ref="envDialog"></env-dialog>
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
   import NamespaceDialog from "../components/NamespaceDialog";
+  import EnvDialog from "../components/EnvDialog";
   export default {
-    components: {NamespaceDialog},
+    components: {EnvDialog, NamespaceDialog},
     data () {
       return {
         envRules: [
@@ -243,12 +186,11 @@
         snackbar: false,
         text: ``,
 
-        envDrawer: null,
-
         currentProject:'',
         currentEnv:'',
 
         namespaceDialog: false,
+        envDialog: false,
 
         dialog: false,
         dialogDelete: false,
@@ -272,9 +214,6 @@
         defaultItem: {
           name: '',
         },
-
-        // 环境列表
-        envList: [],
 
       }
     },
@@ -474,29 +413,12 @@
 
       },
 
-      // --------
-
-      addEnv () {
-        this.envList.push({
-          id: 2,
-          name: '',
-          projectName:this.currentProject,
-          edit: true
-        });
-      },
-
-      manageEnv (item) {
-        this.envList = [];
-        item.envNames.forEach((v,index,arr) => {
-          this.envList.push({
-            id: 1,
-            name: v,
-            projectName:item.name,
-            edit: false
-          });
-        })
-        this.currentProject = item.name;
-        this.envDrawer = true
+      openEnv (projectName) {
+        console.log("632",projectName)
+        this.currentProject = projectName;
+        this.envDialog = true;
+        // 调用子组件的初始化方法
+        this.$refs.envDialog.init(projectName);
       },
 
     },

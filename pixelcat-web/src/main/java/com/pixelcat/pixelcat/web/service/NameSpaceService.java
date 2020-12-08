@@ -15,4 +15,12 @@ public interface NameSpaceService {
 
     BaseResponse<Integer> deleteProject(NameSpaceRequest request);
 
+    BasePageResponse<NameSpaceDTO> getEnvList(NameSpaceRequest request);
+
+    BaseResponse<Integer> addEnv(NameSpaceRequest request);
+
+    BaseResponse<Integer> updateEnv(NameSpaceRequest request);
+
+    BaseResponse<Integer> deleteEnv(NameSpaceRequest request);
+
 }
