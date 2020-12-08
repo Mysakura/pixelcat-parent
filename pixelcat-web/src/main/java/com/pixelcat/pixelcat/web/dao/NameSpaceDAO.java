@@ -12,6 +12,8 @@ public interface NameSpaceDAO {
 
     int updateNameSpace(NameSpace nameSpace);
 
+    int batchUpdateNameSpace(List<NameSpace> nameSpaces);
+
     List<NameSpace> getNameSpaceList(NameSpace nameSpace);
 
     List<NameSpace> getNameSpaceList(NameSpace nameSpace, int limitStart, int limitEnd);

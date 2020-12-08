@@ -391,7 +391,7 @@ public class SimpleORMUtil {
                 throw new PixelCatException("Class["+ clazz.getName() +"]缺失@DbId注解或@DbId注解的字段值为null！");
             }
 
-            return sqlBegin + " set " + sqlField.toString() + condition.toString();
+            return sqlBegin + " set " + String.join(",", sqlField) + condition.toString();
 
         } catch (IllegalAccessException e) {
             throw new PixelCatException("从Bean解析SQL失败！", e);

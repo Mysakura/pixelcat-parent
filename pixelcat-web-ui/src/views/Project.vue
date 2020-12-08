@@ -92,10 +92,7 @@
                   </v-btn>
                   <v-dialog v-model="dialogDelete" max-width="500px">
                     <v-card>
-                      <v-card-title class="headline">确定删除此项目？</v-card-title>
-                      <v-card-text>
-                        {{selected}}
-                      </v-card-text>
+                      <v-card-title class="headline">确定删除选中项目？</v-card-title>
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" text @click="closeDelete">取消</v-btn>
@@ -256,7 +253,7 @@
         dialog: false,
         dialogDelete: false,
 
-        selected: [],
+        selected: [], // 选中数据
         search: '',
 
         dataList: [
@@ -378,8 +375,31 @@
 
 
       deleteItemConfirm () {
-        this.dataList.splice(this.editedIndex, 1)
-        this.closeDelete()
+        // this.dataList.splice(this.editedIndex, 1)
+        let me = this;
+        let ids = new Array();
+        me.selected.forEach((item, index, arr) => {
+          ids.push(item.id);
+        })
+
+        let params = {
+          ids: ids,
+        };
+        me.$axios.post('/project/delete', params)
+        // 请求成功后
+                .then(function (response) {
+                  let data = response.data;
+                  if (data.code === 0)
+                    me.showTip("删除成功！");
+                  else
+                    me.showTip("删除失败！" + data.message);
+                })
+                // 请求失败处理
+                .catch(function (error) {
+                  console.log(error);
+                  me.showTip(error);
+                });
+        this.closeDelete();
       },
 
       close () {
@@ -393,6 +413,7 @@
 
       closeDelete () {
         this.dialogDelete = false
+        this.init();
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1

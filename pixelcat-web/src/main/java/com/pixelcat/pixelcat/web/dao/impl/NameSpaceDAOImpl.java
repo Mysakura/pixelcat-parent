@@ -40,6 +40,18 @@ public class NameSpaceDAOImpl implements NameSpaceDAO {
     }
 
     @Override
+    public int batchUpdateNameSpace(List<NameSpace> nameSpaces) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            int i = executor.batchUpdateById(nameSpaces);
+            executor.commit();
+            return i;
+        }finally {
+            executor.close();
+        }
+    }
+
+    @Override
     public List<NameSpace> getNameSpaceList(NameSpace nameSpace) {
         Executor executor = executorFactory.newExecutor();
         try {

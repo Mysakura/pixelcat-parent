@@ -13,4 +13,6 @@ public interface NameSpaceService {
 
     BaseResponse<Integer> updateProject(NameSpaceRequest request);
 
+    BaseResponse<Integer> deleteProject(NameSpaceRequest request);
+
 }

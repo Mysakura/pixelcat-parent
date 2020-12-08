@@ -4,11 +4,14 @@ import com.pixelcat.pixelcat.web.base.BaseRequest;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class NameSpaceRequest extends BaseRequest {
 
     private Long id;
+
+    private List<Long> ids;
 
     private String name;
 

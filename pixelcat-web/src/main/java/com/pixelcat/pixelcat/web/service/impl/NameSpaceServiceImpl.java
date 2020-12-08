@@ -2,7 +2,8 @@ package com.pixelcat.pixelcat.web.service.impl;
 
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
-import com.pixelcat.pixelcat.web.base.NameSpaceEnum;
+import com.pixelcat.pixelcat.web.base.enums.DeleteEnum;
+import com.pixelcat.pixelcat.web.base.enums.NameSpaceEnum;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
 import com.pixelcat.pixelcat.web.dao.NameSpaceDAO;
@@ -27,6 +28,7 @@ public class NameSpaceServiceImpl implements NameSpaceService {
     public BasePageResponse<NameSpaceDTO> getProjectList() {
         BasePageResponse<NameSpaceDTO> response = new BasePageResponse<>();
         NameSpace record = new NameSpace();
+        record.setDeleteFlag(DeleteEnum.NO.getCode());
         record.setType(NameSpaceEnum.PROJECT.getCode());
         List<NameSpace> projectList = nameSpaceDAO.getNameSpaceList(record);
 
@@ -66,6 +68,22 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         NameSpace record = new NameSpace();
         BeanUtils.copyProperties(request, record);
         int i = nameSpaceDAO.updateNameSpace(record);
+        response.setData(i);
+        return response;
+    }
+
+    @Override
+    public BaseResponse<Integer> deleteProject(NameSpaceRequest request) {
+        BaseResponse<Integer> response = new BaseResponse<>();
+        List<NameSpace> list = new ArrayList<>();
+        request.getIds().forEach(id -> {
+            NameSpace record = new NameSpace();
+            BeanUtils.copyProperties(request, record);
+            record.setId(id);
+            record.setDeleteFlag(DeleteEnum.YES.getCode());
+            list.add(record);
+        });
+        int i = nameSpaceDAO.batchUpdateNameSpace(list);
         response.setData(i);
         return response;
     }

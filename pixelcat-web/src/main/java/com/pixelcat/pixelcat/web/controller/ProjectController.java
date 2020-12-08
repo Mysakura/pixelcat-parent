@@ -37,4 +37,11 @@ public class ProjectController {
         request.setUpdateTime(new Date());
         return nameSpaceService.updateProject(request);
     }
+
+    @RequestMapping("/delete")
+    public BaseResponse<Integer> deleteProject(@RequestBody NameSpaceRequest request){
+        request.setUsername("Admin");
+        request.setUpdateTime(new Date());
+        return nameSpaceService.deleteProject(request);
+    }
 }

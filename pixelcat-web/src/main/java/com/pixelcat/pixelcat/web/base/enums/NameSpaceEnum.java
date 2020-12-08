@@ -1,4 +1,4 @@
-package com.pixelcat.pixelcat.web.base;
+package com.pixelcat.pixelcat.web.base.enums;
 
 public enum NameSpaceEnum {
     PROJECT(1),
