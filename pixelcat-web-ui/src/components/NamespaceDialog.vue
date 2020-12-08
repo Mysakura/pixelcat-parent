@@ -216,11 +216,15 @@
                     name: 'Frozen Yogurt',
                     envName: ['测试1','测试2'],
                     namespace: 'dubbo.properties',
+                    userName: 'AAA',
+                    updateTime: '2020-12-07 14:53:00',
                 },
                 {
                     name: 'Ice cream sandwich',
                     envName: ['测试1','测试2'],
                     namespace: 'zk.properties',
+                    userName: 'AAA',
+                    updateTime: '2020-12-07 14:53:00',
                 }
             ],
             editedIndex: -1,
@@ -248,6 +252,14 @@
                         text: 'NameSpace',
                         align: 'start',
                         value: 'namespace',
+                    },
+                    {
+                        text: '操作人',
+                        value: 'userName',
+                    },
+                    {
+                        text: '操作时间',
+                        value: 'updateTime',
                     },
                     { text: '操作', value: 'actions' }
                 ]

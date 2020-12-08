@@ -192,6 +192,9 @@
                             </v-dialog>
                         </v-toolbar>
                     </template>
+                    <template v-slot:item.value="{ item }">
+                        <div style="max-width: 150px;">{{item.value}}</div>
+                    </template>
                     <template v-slot:item.actions="{ item }">
                         <v-btn
                                 small
@@ -259,12 +262,16 @@
                     key: 'timeout',
                     value: '1000',
                     namespace: 'dubbo.properties',
+                    userName: 'AAA',
+                    updateTime: '2020-12-07 14:53:00',
                 },
                 {
                     id: '2',
                     key: 'zk',
                     value: '127.0.0.1:2181',
                     namespace: 'dubbo.properties',
+                    userName: 'AAA',
+                    updateTime: '2020-12-07 14:53:00',
                 }
             ],
             configSelected: [],
@@ -287,10 +294,12 @@
         mounted(){
             for(let i = 0; i < 100; i++){
                 this.configs.push({
-                    id: '1',
+                    id: 'a' + i,
                     key: 'zk',
-                    value: '127.0.0.1:2181',
+                    value: '127.0.0.1:2181,127.0.0.1:2181,127.0.0.1:2181,127.0.0.1:2181,127.0.0.1:2181,127.0.0.1:2181',
                     namespace: 'dubbo.properties',
+                    userName: 'AAA',
+                    updateTime: '2020-12-07 14:53:00',
                 });
             }
             window.vue = this;
@@ -300,6 +309,8 @@
                 return [
                     { text: 'key', value: 'key', },
                     { text: 'Value', value: 'value', },
+                    { text: '操作者', value: 'userName', },
+                    { text: '操作时间', value: 'updateTime', },
                     { text: '操作', value: 'actions' }
                 ]
             },

@@ -100,31 +100,31 @@ public class SimpleORMUtil {
             Class<?> clazz = obj.getClass();
             String tableName = getTableName(clazz);
 
-            String sqlBegin = "insert into " + tableName + "(";
-            StringBuilder sqlField = new StringBuilder();
-            StringBuilder sqlValue = new StringBuilder("(");
+            String sqlBegin = "insert into " + tableName + " ";
+            List<String> sqlField = new ArrayList<>();
+            List<String> sqlValue = new ArrayList<>();
             Field[] declaredFields = clazz.getDeclaredFields();
 
-            for (int i = 0; i < declaredFields.length; i++){
-                Field f = declaredFields[i];
+            for (Field f : declaredFields){
                 // 数据库字段名
                 String dbFieldName = getFieldName(f);
                 // 字段名为空，跳过
                 if (dbFieldName == null){
                     continue;
                 }
-
-                sqlField.append(dbFieldName);
-                if (i == declaredFields.length - 1){
-                    sqlField.append(") value");
-                    sqlValue.append("?) ");
-                }else{
-                    sqlField.append(",");
-                    sqlValue.append("?,");
+                Object o = f.get(obj);
+                // 传入属性为空，跳过
+                if (o == null){
+                    continue;
                 }
-                params.add(f.get(obj));
+
+                sqlField.add(dbFieldName);
+                sqlValue.add("?");
+                params.add(o);
             }
-            String sql = sqlBegin + sqlField.toString() + sqlValue.toString();
+            String fieldStr = "(" + String.join(",", sqlField) + ") value";
+            String fieldValueStr = "(" + String.join(",", sqlValue) + ")";
+            String sql = sqlBegin + fieldStr + fieldValueStr;
 
             return new SqlAndParam(sql, params, null);
         } catch (IllegalAccessException e) {
@@ -145,7 +145,7 @@ public class SimpleORMUtil {
             String tableName = getTableName(clazz);
 
             String sqlBegin = "update " + tableName;
-            StringBuilder sqlField = new StringBuilder(" set ");
+            List<String> sqlField = new ArrayList<>();
             StringBuilder condition = new StringBuilder();
             boolean hasId = false;
             Object idValue = null;
@@ -159,6 +159,11 @@ public class SimpleORMUtil {
                 if (dbFieldName == null){
                     continue;
                 }
+                Object o = f.get(obj);
+                // 传入属性为空，跳过
+                if (o == null){
+                    continue;
+                }
 
                 DbId idAnnotation = f.getDeclaredAnnotation(DbId.class);
                 // 寻找id标识
@@ -167,24 +172,18 @@ public class SimpleORMUtil {
                     condition.append("where ");
                     condition.append(dbFieldName);
                     condition.append(" = ?");
-                    idValue = f.get(obj);
+                    idValue = o;
                     continue;
                 }
-
-                if (i == declaredFields.length - 1){
-                    sqlField.append(dbFieldName);
-                    sqlField.append(" = ? ");
-                }else{
-                    sqlField.append(dbFieldName);
-                    sqlField.append(" = ?,");
-                }
-                params.add(f.get(obj));
+                sqlField.add(dbFieldName + " = ? ");
+                params.add(o);
             }
-            if (!hasId || idValue == null){
+            if (!hasId){
                 throw new PixelCatException("Class["+ clazz.getName() +"]缺失@DbId注解或@DbId注解的字段值为null！");
             }
             params.add(idValue);
-            String sql = sqlBegin + sqlField.toString() + condition.toString();
+
+            String sql = sqlBegin + " set " + String.join(",", sqlField) + condition.toString();
 
             return new SqlAndParam(sql, params, null);
         } catch (IllegalAccessException e) {
@@ -287,31 +286,34 @@ public class SimpleORMUtil {
         Class<?> clazz = obj.getClass();
         String tableName = getTableName(clazz);
 
-        String sqlBegin = "insert into " + tableName + "(";
-        StringBuilder sqlField = new StringBuilder();
-        StringBuilder sqlValue = new StringBuilder("(");
+        String sqlBegin = "insert into " + tableName + " ";
+        List<String> sqlField = new ArrayList<>();
+        List<String> sqlValue = new ArrayList<>();
 
         Field[] declaredFields = clazz.getDeclaredFields();
 
-        for (int i = 0; i < declaredFields.length; i++){
-            Field f = declaredFields[i];
+        for (Field f : declaredFields){
             // 数据库字段名
             String dbFieldName = getFieldName(f);
             // 字段名为空，跳过
             if (dbFieldName == null){
                 continue;
             }
-
-            sqlField.append(dbFieldName);
-            if (i == declaredFields.length - 1){
-                sqlField.append(") value");
-                sqlValue.append("?) ");
-            }else{
-                sqlField.append(",");
-                sqlValue.append("?,");
+            // 属性为空，跳过
+            try {
+                if (f.get(obj) == null){
+                    continue;
+                }
+            } catch (IllegalAccessException e) {
+                throw new PixelCatException("从Bean解析SQL失败！", e);
             }
+
+            sqlField.add(dbFieldName);
+            sqlValue.add("?");
         }
-        return sqlBegin + sqlField.toString() + sqlValue.toString();
+        String fieldStr = "(" + String.join(",", sqlField) + ") value";
+        String fieldValueStr = "(" + String.join(",", sqlValue) + ")";
+        return sqlBegin + fieldStr + fieldValueStr;
     }
 
     /**
@@ -333,6 +335,10 @@ public class SimpleORMUtil {
                 if (dbFieldName == null){
                     continue;
                 }
+                // 属性为空，跳过
+                if (f.get(obj) == null){
+                    continue;
+                }
                 params.add(f.get(obj));
             }
 
@@ -348,7 +354,7 @@ public class SimpleORMUtil {
             String tableName = getTableName(clazz);
 
             String sqlBegin = "update " + tableName;
-            StringBuilder sqlField = new StringBuilder(" set ");
+            List<String> sqlField = new ArrayList<>();
             StringBuilder condition = new StringBuilder();
             boolean hasId = false;
             Object idValue = null;
@@ -363,6 +369,11 @@ public class SimpleORMUtil {
                 if (dbFieldName == null){
                     continue;
                 }
+                Object o = f.get(obj);
+                // 传入属性为空，跳过
+                if (o == null){
+                    continue;
+                }
 
                 DbId idAnnotation = f.getDeclaredAnnotation(DbId.class);
                 // 寻找id标识
@@ -371,22 +382,16 @@ public class SimpleORMUtil {
                     condition.append("where ");
                     condition.append(dbFieldName);
                     condition.append(" = ?");
-                    idValue = f.get(obj);
+                    idValue = o;
                     continue;
                 }
-
-                if (i == declaredFields.length - 1){
-                    sqlField.append(dbFieldName);
-                    sqlField.append(" = ? ");
-                }else{
-                    sqlField.append(dbFieldName);
-                    sqlField.append(" = ?,");
-                }
+                sqlField.add(dbFieldName + " = ? ");
             }
-            if (!hasId || idValue == null){
+            if (!hasId){
                 throw new PixelCatException("Class["+ clazz.getName() +"]缺失@DbId注解或@DbId注解的字段值为null！");
             }
-            return sqlBegin + sqlField.toString() + condition.toString();
+
+            return sqlBegin + " set " + sqlField.toString() + condition.toString();
 
         } catch (IllegalAccessException e) {
             throw new PixelCatException("从Bean解析SQL失败！", e);
@@ -410,17 +415,22 @@ public class SimpleORMUtil {
                 if (dbFieldName == null){
                     continue;
                 }
+                Object o = f.get(obj);
+                // 传入属性为空，跳过
+                if (o == null){
+                    continue;
+                }
                 DbId idAnnotation = f.getDeclaredAnnotation(DbId.class);
                 // 寻找id标识
                 if (idAnnotation != null){
                     hasId = true;
-                    idValue = f.get(obj);
+                    idValue = o;
                     continue;
                 }
 
-                params.add(f.get(obj));
+                params.add(o);
             }
-            if (!hasId || idValue == null){
+            if (!hasId){
                 throw new PixelCatException("Class["+ clazz.getName() +"]缺失@DbId注解或@DbId注解的字段值为null！");
             }
             params.add(idValue);

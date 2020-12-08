@@ -2,6 +2,7 @@
     <v-navigation-drawer
             v-model="drawer"
             :mini-variant.sync="mini"
+            width="230"
             permanent
             clipped
             app
@@ -41,7 +42,6 @@
                 <v-list-group
                         v-else
                         no-action
-                        :value="true"
                         :prepend-icon="item.icon"
                         :color="item.color"
                 >
@@ -87,7 +87,10 @@
                     ] }
             ],
             mini: true,
-        })
+        }),
+        mounted() {
+            window.vue = this;
+        }
     }
 </script>
 

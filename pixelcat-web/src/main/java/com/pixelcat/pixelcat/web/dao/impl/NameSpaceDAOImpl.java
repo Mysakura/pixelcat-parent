@@ -3,7 +3,7 @@ package com.pixelcat.pixelcat.web.dao.impl;
 import com.pixelcat.core.db.executor.Executor;
 import com.pixelcat.core.db.executor.ExecutorFactory;
 import com.pixelcat.pixelcat.web.dao.NameSpaceDAO;
-import com.pixelcat.spring.boot.autoconfigure.init.NameSpace;
+import com.pixelcat.pixelcat.web.domain.NameSpace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +44,18 @@ public class NameSpaceDAOImpl implements NameSpaceDAO {
         Executor executor = executorFactory.newExecutor();
         try {
             List<NameSpace> list = executor.getList(NameSpace.class, nameSpace);
+            executor.commit();
+            return list;
+        }finally {
+            executor.close();
+        }
+    }
+
+    @Override
+    public List<NameSpace> getNameSpaceList(NameSpace nameSpace, int limitStart, int limitEnd) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            List<NameSpace> list = executor.getList(NameSpace.class, nameSpace, limitStart, limitEnd);
             executor.commit();
             return list;
         }finally {

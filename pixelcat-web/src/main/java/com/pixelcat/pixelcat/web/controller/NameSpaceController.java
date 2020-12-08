@@ -1,4 +1,4 @@
-package com.pixelcat.pixelcat.web.dao.controller;
+package com.pixelcat.pixelcat.web.controller;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

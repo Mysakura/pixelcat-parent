@@ -63,8 +63,8 @@ public class PreparedStatementHandler implements StatementHandler {
     public int update(PreparedStatement ps, List<Object> params) throws PixelCatException {
         try {
             setParams(ps, params);
-            ps.executeUpdate();
             printSQL(ps);
+            ps.executeUpdate();
             return ps.getUpdateCount();
         } catch (SQLException e) {
             rollback();
@@ -85,15 +85,15 @@ public class PreparedStatementHandler implements StatementHandler {
                     setParams(ps, current);
                     ps.addBatch();
                     if ((i+1) % batchSize == 0){
+                        printSQL(ps);
                         int[] batch = ps.executeBatch();
                         updateCount += batch.length;
-                        printSQL(ps);
                     }
                 }
                 if (params.size() % batchSize != 0) {
+                    printSQL(ps);
                     int[] batch = ps.executeBatch();
                     updateCount += batch.length;
-                    printSQL(ps);
                 }
                 ps.clearBatch();
             }
@@ -110,8 +110,8 @@ public class PreparedStatementHandler implements StatementHandler {
     public <E> List<E> list(Class<E> clazz, PreparedStatement ps, List<Object> params) {
         try {
             setParams(ps, params);
-            ResultSet resultSet = ps.executeQuery();
             printSQL(ps);
+            ResultSet resultSet = ps.executeQuery();
             return resultSetHandler.handleResultSets(clazz, resultSet);
         } catch (SQLException e) {
             rollback();

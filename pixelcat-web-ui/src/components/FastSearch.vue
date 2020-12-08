@@ -219,18 +219,24 @@
           projectName: '基金',
           envName: '测试1',
           name: 'zk.properties',
+          userName: 'AAA',
+          updateTime: '2020-12-07 14:53:00',
         },
         {
           id: 2,
           projectName: '基金',
           envName: '测试10',
           name: 'db.properties',
+          userName: 'AAA',
+          updateTime: '2020-12-07 14:53:00',
         },
         {
           id: 3,
           projectName: '资管',
           envName: '测试5',
           name: 'zk.properties',
+          userName: 'AAA',
+          updateTime: '2020-12-07 14:53:00',
         },
       ],
       editedIndex: -1,
@@ -260,6 +266,14 @@
           {
             text: '环境',
             value: 'envName',
+          },
+          {
+            text: '操作人',
+            value: 'userName',
+          },
+          {
+            text: '操作时间',
+            value: 'updateTime',
           },
           {text: '操作', value: 'actions'}
         ]

@@ -1,7 +1,8 @@
 package com.pixelcat.pixelcat.web.dao;
 
 
-import com.pixelcat.spring.boot.autoconfigure.init.NameSpace;
+
+import com.pixelcat.pixelcat.web.domain.NameSpace;
 
 import java.util.List;
 
@@ -12,5 +13,7 @@ public interface NameSpaceDAO {
     int updateNameSpace(NameSpace nameSpace);
 
     List<NameSpace> getNameSpaceList(NameSpace nameSpace);
+
+    List<NameSpace> getNameSpaceList(NameSpace nameSpace, int limitStart, int limitEnd);
 
 }

@@ -65,11 +65,11 @@ com.mysql.jdbc.Driver
 </dependency>
 
 
-1.获取连接 Connection con = DriverManager.getConnection()
-2.开启事务 con.setAutoCommit(true/false);
-3.执行CRUD
-4.提交事务/回滚事务 con.commit() / con.rollback();
-5.关闭连接 conn.close();
+1. 获取连接 Connection con = DriverManager.getConnection()
+2. 开启事务 con.setAutoCommit(true/false);
+3. 执行CRUD
+4. 提交事务/回滚事务 con.commit() / con.rollback();
+5. 关闭连接 conn.close();
 
 OkHttp:https://square.github.io/okhttp/
 

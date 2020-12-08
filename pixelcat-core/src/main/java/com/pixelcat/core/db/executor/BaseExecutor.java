@@ -128,7 +128,12 @@ public class BaseExecutor implements Executor {
 
     @Override
     public <E> List<E> getList(Class<E> clazz, E obj) {
-        SimpleORMUtil.SqlAndParam sp = SimpleORMUtil.getInstance().parseListSQLFromClass(obj);
+        return getList(clazz, obj, null, null);
+    }
+
+    @Override
+    public <E> List<E> getList(Class<E> clazz, E obj, Integer limitStart, Integer limitEnd) {
+        SimpleORMUtil.SqlAndParam sp = SimpleORMUtil.getInstance().parseListSQLFromClass(obj, limitStart, limitEnd);
         PreparedStatement ps = statementHandler.preparedStatement(connection, sp.getSql());
         return statementHandler.list(clazz, ps, sp.getParams());
     }

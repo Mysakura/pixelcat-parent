@@ -64,4 +64,6 @@ public interface Executor {
      * @return
      */
     <E> List<E> getList(Class<E> clazz, E obj);
+
+    <E> List<E> getList(Class<E> clazz, E obj, Integer limitStart, Integer limitEnd);
 }

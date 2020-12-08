@@ -20,14 +20,11 @@
                     v-model="selected"
                     show-select
                     :headers="headers"
-                    :items="desserts"
+                    :items="dataList"
                     item-key="name"
                     class="elevation-1"
                     :search="search"
-                    :page.sync="page"
-                    :items-per-page="pageSize"
                     hide-default-footer
-                    @page-count="pageCount = $event"
             >
               <template v-slot:top>
                 <v-toolbar flat>
@@ -141,13 +138,6 @@
                 </v-btn>
               </template>
             </v-data-table>
-            <div class="text-center pt-2">
-              <v-pagination
-                      v-model="page"
-                      :length="pageCount"
-                      :total-visible="7"
-              ></v-pagination>
-            </div>
           </v-card-text>
         </v-card>
         <!--namespace弹框-->
@@ -265,54 +255,17 @@
 
         dialog: false,
         dialogDelete: false,
-        page: 1,
-        pageCount: 0,
-        pageSize: 10,
 
         selected: [],
         search: '',
 
-        desserts: [
-          {
-            name: 'Frozen Yogurt',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Ice cream sandwich',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Eclair',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Cupcake',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Gingerbread',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Jelly bean',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Lollipop',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Honeycomb',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'Donut',
-            envNames: ['测试1','测试2'],
-          },
-          {
-            name: 'KitKat',
-            envNames: ['测试1','测试2'],
-          },
+        dataList: [
+          // {
+          //   name: 'Frozen Yogurt',
+          //   envNames: ['测试1','测试2'],
+          //   username: 'AAA',
+          //   updateTimeStr: '2020-12-07 14:53:00',
+          // }
         ],
 
         editedIndex: -1,
@@ -340,6 +293,14 @@
             text: '环境',
             value: 'envNames',
           },
+          {
+            text: '操作人',
+            value: 'username',
+          },
+          {
+            text: '操作时间',
+            value: 'updateTimeStr',
+          },
           { text: '操作', value: 'actions' }
         ]
       },
@@ -356,17 +317,60 @@
         val || this.closeDelete()
       },
     },
+    mounted(){
+      this.init();
+    },
     methods: {
+      init(){
+        let me = this;
+        me.getDataForTable()
+                .then(data => {
+                  me.dataList = data.dataList;
+                  console.log(me.dataList)
+                })
+      },
+      showTip(text){
+        this.snackbar = true;
+        this.text = text;
+      },
+      getDataForTable () {
+        let me = this;
+        return new Promise((resolve, reject) => {
+          // 额外的参数，比如headers
+          // let options = {
+          //     headers: {
+          //         'token': '00000'
+          //     }
+          // }
+          // 参数
+          let params = {};
+          me.$axios.post('/project/list', params/*,options*/)
+          // 请求成功后
+                  .then(function (response) {
+                    let data = response.data;
+                    let dataList = data.dataList;
+                    resolve({
+                      dataList
+                    })
+                  })
+                  // 请求失败处理
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+        })
+      },
+
+
+
       editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+        this.editedIndex = this.dataList.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem () {
         if (this.selected == "") {
-          this.snackbar = true;
-          this.text = "请先选择数据！";
+          this.showTip("请先选择数据！");
           return;
         }
         this.dialogDelete = true
@@ -374,12 +378,13 @@
 
 
       deleteItemConfirm () {
-        this.desserts.splice(this.editedIndex, 1)
+        this.dataList.splice(this.editedIndex, 1)
         this.closeDelete()
       },
 
       close () {
         this.dialog = false
+        this.init();
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
@@ -395,10 +400,49 @@
       },
 
       save () {
+        let me = this;
+
         if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          // Object.assign(this.dataList[this.editedIndex], this.editedItem)
+          let params = {
+            id: me.editedItem.id,
+            type: 1,
+            name: me.editedItem.name,
+          };
+          me.$axios.post('/project/update', params)
+          // 请求成功后
+                  .then(function (response) {
+                    let data = response.data;
+                    if (data.code === 0)
+                      me.showTip("修改成功！");
+                    else
+                      me.showTip("修改失败！" + data.message);
+                  })
+                  // 请求失败处理
+                  .catch(function (error) {
+                    console.log(error);
+                    me.showTip(error);
+                  });
         } else {
-          this.desserts.push(this.editedItem)
+          // this.dataList.push(this.editedItem)
+          let params = {
+            type: 1,
+            name: me.editedItem.name,
+          };
+          me.$axios.post('/project/add', params)
+          // 请求成功后
+                  .then(function (response) {
+                    let data = response.data;
+                    if (data.code === 0)
+                      me.showTip("新增成功！");
+                    else
+                      me.showTip("新增失败！" + data.message);
+                  })
+                  // 请求失败处理
+                  .catch(function (error) {
+                    console.log(error);
+                    me.showTip(error);
+                  });
         }
         this.close()
       },
