@@ -47,14 +47,10 @@ public class SimpleORMUtil {
                 String dbFieldName = annotation.value();
 
                 Object o = dataMap.get(dbFieldName);
-                if (o != null){
-                    if (log.isDebugEnabled()){
-                        log.debug("Bean Field Name:{},DB Field Name:{},Value:{}", name, dbFieldName, o);
-                    }
-                    f.set(newInstance, o);
-                }else{
-                    throw new PixelCatException("数据库不存在此变量["+ name +"]对应的字段");
+                if (log.isDebugEnabled()){
+                    log.debug("Bean Field Name:{},DB Field Name:{},Value:{}", name, dbFieldName, o);
                 }
+                f.set(newInstance, o);
             }
             return newInstance;
         } catch (Exception e) {
@@ -441,7 +437,7 @@ public class SimpleORMUtil {
      * @param <T>
      * @return
      */
-    public <T> SqlAndParam parseListSQLFromClass(T obj) {
+    public <T> SqlAndParam parseListSQLFromClass(T obj, Integer limitStart, Integer limitEnd) {
         try {
             List<Object> params = new ArrayList<>();
             Class<?> clazz = obj.getClass();
@@ -480,6 +476,9 @@ public class SimpleORMUtil {
             String sql = sqlBegin;
             if (needWhere){
                 sql += " where " + sqlValue.substring(0, sqlValue.lastIndexOf("and"));
+            }
+            if (limitStart != null && limitEnd != null){
+                sql += "limit " + limitStart + "," + limitEnd;
             }
             return new SqlAndParam(sql, params, null);
         } catch (IllegalAccessException e) {
