@@ -10,7 +10,7 @@
                       :items="search.projectList"
                       @change="changeProject"
                       item-text="name"
-                      item-value="name"
+                      item-value="id"
                       label="项目"
                       clearable
                       :rules="[v => !!v || '必选']"
@@ -22,7 +22,7 @@
                       :items="search.envList"
                       @click="selectEnv"
                       item-text="name"
-                      item-value="name"
+                      item-value="id"
                       label="环境"
                       clearable
                       :rules="[v => !!v || '必选']"
@@ -54,19 +54,19 @@
               hide-default-footer
       >
         <!--改变某个字段的显示方式-->
-        <template v-slot:item.envName="{ item }">
-          <v-chip
-                  class="ma-2"
-                  color="cyan"
-                  label
-                  text-color="white"
-          >
-            <v-icon left small>
-              mdi-label
-            </v-icon>
-            {{item.envName}}
-          </v-chip>
-        </template>
+        <!--<template v-slot:item.envName="{ item }">-->
+          <!--<v-chip-->
+                  <!--class="ma-2"-->
+                  <!--color="cyan"-->
+                  <!--label-->
+                  <!--text-color="white"-->
+          <!--&gt;-->
+            <!--<v-icon left small>-->
+              <!--mdi-label-->
+            <!--</v-icon>-->
+            <!--{{item.envName}}-->
+          <!--</v-chip>-->
+        <!--</template>-->
         <template v-slot:item.actions="{ item }">
           <v-btn
                   small
@@ -118,14 +118,14 @@
     computed: {
       headers() {
         return [
-            {
-                text: '项目',
-                value: 'projectName',
-            },
-            {
-                text: '环境',
-                value: 'envName',
-            },
+            // {
+            //     text: '项目',
+            //     value: 'projectName',
+            // },
+            // {
+            //     text: '环境',
+            //     value: 'envName',
+            // },
             {
                 text: 'Namespace',
                 align: 'start',
@@ -175,7 +175,7 @@
       selectEnv () {
         let me = this;
         let params = {
-          projectName: me.search.project
+          projectId: me.search.project
         };
         me.$axios.post('/env/list', params)
         // 请求成功后
@@ -201,8 +201,8 @@
           return;
         }
         let params = {
-          projectName: this.search.project,
-          envName: this.search.env,
+          projectId: this.search.project,
+          envId: this.search.env,
           page: this.page,
           pageSize: this.pageSize,
         };

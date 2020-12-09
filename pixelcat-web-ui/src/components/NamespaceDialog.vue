@@ -15,7 +15,7 @@
                         dark
                         color="teal"
                 >
-                    <v-toolbar-title>项目：【{{currentProject}}】  环境：【{{currentEnv}}】</v-toolbar-title>
+                    <v-toolbar-title>项目：【{{currentProject.name}}】  环境：【{{currentEnv.name}}】</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-toolbar-title>NameSpace Settings</v-toolbar-title>
                     <v-spacer></v-spacer>
@@ -68,14 +68,14 @@
                                                 <v-row>
                                                     <v-col cols="12">
                                                         <v-text-field
-                                                                v-model="currentProject"
+                                                                v-model="currentProject.name"
                                                                 label="项目名称"
                                                                 readonly
                                                         ></v-text-field>
                                                     </v-col>
                                                     <v-col cols="12">
                                                         <v-text-field
-                                                                v-model="currentEnv"
+                                                                v-model="currentEnv.name"
                                                                 label="环境"
                                                                 readonly
                                                         ></v-text-field>
@@ -229,8 +229,8 @@
         }),
         props:{
             namespaceDialog: Boolean,
-            currentProject: String,
-            currentEnv: String,
+            currentProject: Object,
+            currentEnv: Object,
         },
         computed:{
             namespaceHeaders () {
@@ -263,9 +263,9 @@
             }
         },
         methods: {
-            init(projectName, envName){
+            init(project, env){
                 let me = this;
-                me.getDataForTable(projectName, envName)
+                me.getDataForTable(project, env)
                     .then(data => {
                         me.$nextTick(() => {
                             me.dataList = data.dataList;
@@ -279,12 +279,12 @@
                 this.snackbar = true;
                 this.text = text;
             },
-            getDataForTable (projectName, envName) {
+            getDataForTable (project, env) {
                 let me = this;
                 return new Promise((resolve, reject) => {
                     let params = {
-                        projectName: projectName,
-                        envName: envName,
+                        projectId: project.id,
+                        envId: env.id,
                         page: me.page,
                         pageSize: me.pageSize,
                     };
@@ -394,8 +394,8 @@
                     let params = {
                         type: 3,
                         name: me.editedItem.name,
-                        projectName: me.currentProject,
-                        envName: me.currentEnv,
+                        projectId: me.currentProject.id,
+                        envId: me.currentEnv.id,
                     };
                     me.$axios.post('/namespace/add', params)
                     // 请求成功后

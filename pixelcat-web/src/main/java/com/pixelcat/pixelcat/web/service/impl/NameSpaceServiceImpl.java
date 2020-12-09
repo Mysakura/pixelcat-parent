@@ -34,18 +34,14 @@ public class NameSpaceServiceImpl implements NameSpaceService {
 
         record.setType(NameSpaceEnum.ENV.getCode());
         List<NameSpace> envList = nameSpaceDAO.getNameSpaceList(record);
-        Map<String, List<NameSpace>> collect = envList.stream().collect(Collectors.groupingBy(NameSpace::getProjectName));
+        Map<Long, List<NameSpace>> collect = envList.stream().collect(Collectors.groupingBy(NameSpace::getProjectId));
 
 
         List<NameSpaceDTO> dataList = new ArrayList<>();
         projectList.forEach(e -> {
             NameSpaceDTO dto = new NameSpaceDTO();
             BeanUtils.copyProperties(e, dto);
-            List<NameSpace> envs = collect.get(dto.getName());
-            if (envs != null){
-                List<String> nameList = envs.stream().map(NameSpace::getName).collect(Collectors.toList());
-                dto.setEnvNames(nameList);
-            }
+            dto.setEnvList(collect.get(dto.getId()));
             dataList.add(dto);
         });
         response.setDataList(dataList);
@@ -94,7 +90,7 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         NameSpace record = new NameSpace();
         record.setDeleteFlag(DeleteEnum.NO.getCode());
         record.setType(NameSpaceEnum.ENV.getCode());
-        record.setProjectName(request.getProjectName());
+        record.setProjectId(request.getProjectId());
         List<NameSpace> envList = nameSpaceDAO.getNameSpaceList(record);
 
         List<NameSpaceDTO> dataList = new ArrayList<>();
@@ -149,8 +145,8 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         NameSpace record = new NameSpace();
         record.setDeleteFlag(DeleteEnum.NO.getCode());
         record.setType(NameSpaceEnum.NAME_SPACE.getCode());
-        record.setProjectName(request.getProjectName());
-        record.setEnvName(request.getEnvName());
+        record.setProjectId(request.getProjectId());
+        record.setEnvId(request.getEnvId());
         List<NameSpace> nameSpaceList = nameSpaceDAO.getNameSpaceList(record, request.getLimitStart(), request.getLimitEnd());
         int count = nameSpaceDAO.countNameSpace(record);
 

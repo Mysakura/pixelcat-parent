@@ -1,5 +1,6 @@
 package com.pixelcat.pixelcat.web.base.dto;
 
+import com.pixelcat.pixelcat.web.domain.NameSpace;
 import lombok.Data;
 
 import java.text.SimpleDateFormat;
@@ -13,11 +14,15 @@ public class NameSpaceDTO {
 
     private String name;
 
+    private Long projectId;
+
+    private Long envId;
+
     private String projectName;
 
     private String envName;
 
-    private List<String> envNames;
+    private List<NameSpace> envList;
 
     private Integer type;
 

@@ -79,14 +79,14 @@ OkHttp:https://square.github.io/okhttp/
 CREATE TABLE `namespace` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
-  `project_name` varchar(255) DEFAULT NULL,
-  `env_name` varchar(255) DEFAULT NULL,
+  `project_id` bigint(20) DEFAULT NULL,
+  `env_id` bigint(20) DEFAULT NULL,
   `type` int(11) DEFAULT NULL COMMENT '1-p;2-e;3-n',
   `username` varchar(255) DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   `delete_flag` int(11) DEFAULT '1' COMMENT '1-normal;2-deleted',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `namespace_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

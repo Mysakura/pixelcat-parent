@@ -14,7 +14,7 @@
                     dark
                     color="teal"
             >
-                <v-toolbar-title>项目：【{{currentProject}}】</v-toolbar-title>
+                <v-toolbar-title>项目：【{{currentProject.name}}】</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-title>环境 Settings</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -65,7 +65,7 @@
                                             <v-row>
                                                 <v-col cols="12">
                                                     <v-text-field
-                                                            v-model="currentProject"
+                                                            v-model="currentProject.name"
                                                             label="项目名称"
                                                             readonly
                                                     ></v-text-field>
@@ -199,7 +199,7 @@
         }),
         props:{
             envDialog: Boolean,
-            currentProject: String,
+            currentProject: Object,
         },
         computed:{
             headers () {
@@ -229,9 +229,9 @@
         mounted(){
         },
         methods: {
-            init(projectName){
+            init(project){
                 let me = this;
-                me.getDataForTable(projectName)
+                me.getDataForTable(project)
                     .then(data => {
                         me.dataList = data.dataList;
                         console.log("环境列表", me.dataList)
@@ -241,11 +241,11 @@
                 this.snackbar = true;
                 this.text = text;
             },
-            getDataForTable (projectName) {
+            getDataForTable (project) {
                 let me = this;
                 return new Promise((resolve, reject) => {
                     let params = {
-                        projectName: projectName
+                        projectId: project.id
                     };
                     me.$axios.post('/env/list', params)
                     // 请求成功后
@@ -350,7 +350,7 @@
                     let params = {
                         type: 2,
                         name: me.editedItem.name,
-                        projectName: me.currentProject,
+                        projectId: me.currentProject.id,
                     };
                     me.$axios.post('/env/add', params)
                     // 请求成功后

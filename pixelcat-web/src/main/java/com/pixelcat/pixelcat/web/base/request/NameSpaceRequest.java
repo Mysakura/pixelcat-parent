@@ -15,9 +15,9 @@ public class NameSpaceRequest extends BaseRequest {
 
     private String name;
 
-    private String projectName;
+    private Long projectId;
 
-    private String envName;
+    private Long envId;
 
     private Integer type;
 

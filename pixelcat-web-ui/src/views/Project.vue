@@ -111,16 +111,16 @@
                   </v-dialog>
                 </v-toolbar>
               </template>
-              <template v-slot:item.envNames="{ item }">
+              <template v-slot:item.envList="{ item }">
                 <v-btn
                         class="mr-2"
                         color="primary"
                         elevation="2"
                         small
-                        @click="openNamespace(item.name, envName)"
-                        v-for="envName in item.envNames"
-                        :key="envName"
-                >{{envName}}</v-btn>
+                        @click="openNamespace(item, env)"
+                        v-for="env in item.envList"
+                        :key="env.name"
+                >{{env.name}}</v-btn>
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-btn
@@ -137,7 +137,7 @@
                         color="green"
                         dark
                         class="mr-2"
-                        @click="openEnv(item.name)"
+                        @click="openEnv(item)"
                 >
                   管理环境
                 </v-btn>
@@ -186,8 +186,8 @@
         snackbar: false,
         text: ``,
 
-        currentProject:'',
-        currentEnv:'',
+        currentProject:{},
+        currentEnv:{},
 
         namespaceDialog: false,
         envDialog: false,
@@ -201,7 +201,7 @@
         dataList: [
           // {
           //   name: 'Frozen Yogurt',
-          //   envNames: ['测试1','测试2'],
+          //   envList: ['测试1','测试2'],
           //   username: 'AAA',
           //   updateTimeStr: '2020-12-07 14:53:00',
           // }
@@ -227,7 +227,7 @@
           },
           {
             text: '环境',
-            value: 'envNames',
+            value: 'envList',
           },
           {
             text: '操作人',
@@ -406,18 +406,18 @@
         }
         this.close()
       },
-      openNamespace (projectName, envName) {
+      openNamespace (item, env) {
         this.namespaceDialog = true;
-        this.currentProject = projectName;
-        this.currentEnv = envName;
-        this.$refs.namespaceDialog.init(projectName, envName);
+        this.currentProject = item;
+        this.currentEnv = env;
+        this.$refs.namespaceDialog.init(item, env);
       },
 
-      openEnv (projectName) {
-        this.currentProject = projectName;
+      openEnv (project) {
+        this.currentProject = project;
         this.envDialog = true;
         // 调用子组件的初始化方法
-        this.$refs.envDialog.init(projectName);
+        this.$refs.envDialog.init(project);
       },
 
     },
