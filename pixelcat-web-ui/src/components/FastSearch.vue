@@ -118,28 +118,28 @@
     computed: {
       headers() {
         return [
-          {
-            text: 'Namespace',
-            align: 'start',
-            value: 'name',
-          },
-          {
-            text: '项目',
-            value: 'projectName',
-          },
-          {
-            text: '环境',
-            value: 'envName',
-          },
-          {
-            text: '操作人',
-            value: 'username',
-          },
-          {
-            text: '操作时间',
-            value: 'updateTimeStr',
-          },
-          {text: '操作', value: 'actions'}
+            {
+                text: '项目',
+                value: 'projectName',
+            },
+            {
+                text: '环境',
+                value: 'envName',
+            },
+            {
+                text: 'Namespace',
+                align: 'start',
+                value: 'name',
+            },
+            {
+                text: '操作人',
+                value: 'username',
+            },
+            {
+                text: '操作时间',
+                value: 'updateTimeStr',
+            },
+            {text: '操作', value: 'actions'}
         ]
       },
     },
