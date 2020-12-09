@@ -1,137 +1,58 @@
 <template>
   <v-card>
-    <v-card-title   >
-      <v-container>
-        <v-row :gutter="20">
-          <v-col cols="2">
-            <v-select
-                    v-model="search.project"
-                    :items="search.projectList"
-                    label="项目"
-                    dense
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-                    v-model="search.env"
-                    :items="search.envList"
-                    label="环境"
-                    dense
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-                    v-model="search.namespace"
-                    :items="search.namespaceList"
-                    label="Namespace"
-                    dense
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-btn
-                    small
-                    color="primary"
-                    dark
-                    @click="search=''"
-            >
-              查询
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-card-title>
+      <v-form class="col-12" lazy-validation ref="form">
+        <v-container>
+          <v-row :gutter="20">
+            <v-col cols="2">
+              <v-select
+                      v-model="search.project"
+                      :items="search.projectList"
+                      @change="changeProject"
+                      item-text="name"
+                      item-value="name"
+                      label="项目"
+                      clearable
+                      :rules="[v => !!v || '必选']"
+              ></v-select>
+            </v-col>
+            <v-col cols="2">
+              <v-select
+                      v-model="search.env"
+                      :items="search.envList"
+                      @click="selectEnv"
+                      item-text="name"
+                      item-value="name"
+                      label="环境"
+                      clearable
+                      :rules="[v => !!v || '必选']"
+              ></v-select>
+            </v-col>
+            <v-col cols="2">
+              <v-btn
+                      small
+                      color="primary"
+                      class="mt-4"
+                      dark
+                      @click="searchConfirm"
+              >
+                查询
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-form>
     </v-card-title>
     <v-card-text>
       <v-data-table
               :headers="headers"
-              :items="desserts"
+              :items="dataList"
               item-key="id"
               class="elevation-1"
               :page.sync="page"
               :items-per-page="pageSize"
               hide-default-footer
-              @page-count="pageCount = $event"
       >
-        <template v-slot:top>
-          <v-toolbar flat>
-            <v-dialog
-                    v-model="dialog"
-                    max-width="500px"
-                    persistent
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                        small
-                        color="primary"
-                        dark
-                        class="mb-2"
-                        v-bind="attrs"
-                        v-on="on"
-                >
-                  新建
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12">
-                        <v-text-field
-                                v-model="editedItem.projectName"
-                                label="项目名称"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                                v-model="editedItem.envName"
-                                label="环境名称"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                                v-model="editedItem.name"
-                                label="Namespace"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                          color="blue darken-1"
-                          text
-                          @click="close"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                          color="blue darken-1"
-                          text
-                          @click="save"
-                  >
-                    保存
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="dialogDelete" max-width="500px">
-              <v-card>
-                <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-toolbar>
-        </template>
         <!--改变某个字段的显示方式-->
         <template v-slot:item.envName="{ item }">
           <v-chip
@@ -149,29 +70,12 @@
         <template v-slot:item.actions="{ item }">
           <v-btn
                   small
-                  color="green"
-                  dark
-                  class="mr-2"
-                  @click="editItem(item)"
-          >
-            修改
-          </v-btn>
-          <v-btn
-                  small
                   color="primary"
                   dark
                   class="mr-2"
-                  @click="showConfigDialog(item.name)"
+                  @click="showConfigDialog(item)"
           >
             配置
-          </v-btn>
-          <v-btn
-                  small
-                  color="red"
-                  dark
-                  @click="deleteItem(item)"
-          >
-            删除
           </v-btn>
         </template>
       </v-data-table>
@@ -183,7 +87,7 @@
         ></v-pagination>
       </div>
       <!--配置列表-->
-      <config-dialog :config-dialog="config.configDialog" :current-namespace="config.currentNamespace" @close="config.configDialog = false"></config-dialog>
+      <config-dialog :config-dialog="config.configDialog" :current-namespace="config.currentNamespace" :namespace-id="config.namespaceId" @close="config.configDialog = false" ref="configDialog"></config-dialog>
     </v-card-text>
   </v-card>
 </template>
@@ -197,59 +101,19 @@
       page: 1,
       pageCount: 0,
       pageSize: 10,
-      dialog: false,
-      dialogDelete: false,
-
 
       search:{
         project:'',
         env:'',
-        namespace:'',
-        projectList:['Foo', 'Bar', 'Fizz', 'Buzz'],
-        envList:['Foo', 'Bar', 'Fizz', 'Buzz'],
-        namespaceList:['Foo', 'Bar', 'Fizz', 'Buzz'],
+        projectList:[],
+        envList:[],
       },
       config:{
+        namespaceId: 0,
         currentNamespace: '',
         configDialog: false,
       },
-      desserts: [
-        {
-          id: 1,
-          projectName: '基金',
-          envName: '测试1',
-          name: 'zk.properties',
-          userName: 'AAA',
-          updateTime: '2020-12-07 14:53:00',
-        },
-        {
-          id: 2,
-          projectName: '基金',
-          envName: '测试10',
-          name: 'db.properties',
-          userName: 'AAA',
-          updateTime: '2020-12-07 14:53:00',
-        },
-        {
-          id: 3,
-          projectName: '资管',
-          envName: '测试5',
-          name: 'zk.properties',
-          userName: 'AAA',
-          updateTime: '2020-12-07 14:53:00',
-        },
-      ],
-      editedIndex: -1,
-      editedItem: {
-        projectName: '',
-        envName: '',
-        name: '',
-      },
-      defaultItem: {
-        projectName: '',
-        envName: '',
-        name: '',
-      },
+      dataList: [],
     }),
     computed: {
       headers() {
@@ -269,67 +133,103 @@
           },
           {
             text: '操作人',
-            value: 'userName',
+            value: 'username',
           },
           {
             text: '操作时间',
-            value: 'updateTime',
+            value: 'updateTimeStr',
           },
           {text: '操作', value: 'actions'}
         ]
       },
-      formTitle () {
-        return this.editedIndex === -1 ? '新建Namespace' : '修改Namespace'
-      },
+    },
+    watch:{
+      page(){
+        this.searchConfirm();
+      }
+    },
+    mounted() {
+      this.selectProject();
+      window.vue = this;
     },
     methods:{
-      close () {
-        this.dialog = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
+      selectProject () {
+        let me = this;
+        let params = {};
+        me.$axios.post('/project/list', params)
+                // 请求成功后
+                .then(function (response) {
+                  let data = response.data;
+                  let dataList = data.dataList;
+
+                  me.$nextTick(() => {
+                    me.search.projectList = dataList;
+                    console.log("初始化project列表", me.search.projectList)
+                  })
+                })
+                // 请求失败处理
+                .catch(function (error) {
+                  console.log(error);
+                });
+      },
+      selectEnv () {
+        let me = this;
+        let params = {
+          projectName: me.search.project
+        };
+        me.$axios.post('/env/list', params)
+        // 请求成功后
+                .then(function (response) {
+                  let data = response.data;
+                  let dataList = data.dataList;
+                  me.$nextTick(() => {
+                    me.search.envList = dataList;
+                    console.log("读取env列表", me.search.envList)
+                  })
+                })
+                // 请求失败处理
+                .catch(function (error) {
+                  console.log(error);
+                });
+      },
+      changeProject () {
+        this.search.envList = [];
       },
 
-      closeDelete () {
-        this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
+      searchConfirm () {
+        if (!this.$refs.form.validate()){
+          return;
         }
-        this.close()
+        let params = {
+          projectName: this.search.project,
+          envName: this.search.env,
+          page: this.page,
+          pageSize: this.pageSize,
+        };
+        let me = this;
+        this.$axios.post('/namespace/list', params)
+                // 请求成功后
+                .then(function (response) {
+                  let data = response.data;
+                  me.$nextTick(() => {
+                    me.dataList = data.dataList;
+                    me.page = data.page;
+                    me.pageCount = data.pageCount;
+                    console.log("NameSpace列表", me.dataList, data.pageCount, me.pageCount)
+                  })
+                })
+                // 请求失败处理
+                .catch(function (error) {
+                  console.log(error);
+                });
       },
 
-      editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialog = true
-      },
-
-      deleteItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
-        this.editedItem = Object.assign({}, item)
-        this.dialogDelete = true
-      },
-
-      deleteItemConfirm () {
-        this.desserts.splice(this.editedIndex, 1)
-        this.closeDelete()
-      },
-
-
-      //-----------
-      showConfigDialog (namespace) {
-        this.config.currentNamespace = namespace;
+      showConfigDialog (item) {
+        this.config.currentNamespace = item.name;
         this.config.configDialog = true;
+        this.config.namespaceId = item.id;
+
+        this.$refs.configDialog.init(item.id);
       },
 
     }

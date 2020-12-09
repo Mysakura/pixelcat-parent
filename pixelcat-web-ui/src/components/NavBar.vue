@@ -77,7 +77,7 @@
         data: () => ({
             drawer: true,
             menuList: [
-                { title: '快速入口', icon: 'mdi-alarm', url: '/', color: 'blue-grey' },
+                { title: '快速配置', icon: 'mdi-alarm', url: '/', color: 'blue-grey' },
                 { title: '项目管理', icon: 'mdi-cog-outline', url: '/project', color: 'teal' },
                 { title: '用户管理', icon: 'mdi-account-multiple', color: 'indigo',
                     children:[

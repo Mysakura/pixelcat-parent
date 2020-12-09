@@ -38,7 +38,6 @@
                             :page.sync="page"
                             :items-per-page="pageSize"
                             hide-default-footer
-                            @page-count="pageCount = $event"
                     >
                         <template v-slot:top>
                             <v-toolbar flat>
@@ -208,7 +207,7 @@
         components: {ConfigDialog},
         data: () => ({
             currentNamespace: '',
-            namespaceId: '',
+            namespaceId: 0,
             snackbar: false,
             text: ``,
             page: 1,
