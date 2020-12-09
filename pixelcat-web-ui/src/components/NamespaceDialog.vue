@@ -158,7 +158,7 @@
                                     small
                                     color="primary"
                                     dark
-                                    @click="showConfigDialog(item.namespace)"
+                                    @click="showConfigDialog(item)"
                             >
                                 配置
                             </v-btn>
@@ -197,7 +197,7 @@
             </v-snackbar>
         </v-dialog>
         <!--配置列表-->
-        <config-dialog :config-dialog="configDialog" :current-namespace="currentNamespace" @close="configDialog = false"></config-dialog>
+        <config-dialog :config-dialog="configDialog" :current-namespace="currentNamespace" :namespace-id="namespaceId" @close="configDialog = false" ref="configDialog"></config-dialog>
     </div>
 </template>
 
@@ -208,6 +208,7 @@
         components: {ConfigDialog},
         data: () => ({
             currentNamespace: '',
+            namespaceId: '',
             snackbar: false,
             text: ``,
             page: 1,
@@ -418,9 +419,11 @@
 
 
             //----------------------
-            showConfigDialog (namespace) {
-                this.currentNamespace = namespace;
+            showConfigDialog (item) {
+                this.currentNamespace = item.name;
+                this.namespaceId = item.id;
                 this.configDialog = true;
+                this.$refs.configDialog.init(item.id);
             },
 
         }

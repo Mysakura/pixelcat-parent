@@ -82,15 +82,19 @@ CREATE TABLE `namespace` (
   `project_name` varchar(255) DEFAULT NULL,
   `env_name` varchar(255) DEFAULT NULL,
   `type` int(11) DEFAULT NULL COMMENT '1-p;2-e;3-n',
+  `username` varchar(255) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
   `delete_flag` int(11) DEFAULT '1' COMMENT '1-normal;2-deleted',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `namespace_config` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `key` varchar(255) NOT NULL COMMENT '键',
-  `value` varchar(255) NOT NULL COMMENT '值',
+  `config_key` varchar(255) NOT NULL COMMENT '键',
+  `config_value` varchar(255) NOT NULL COMMENT '值',
   `namespace_id` bigint(20) NOT NULL COMMENT '所属namespace',
+  `username` varchar(255) DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
   `delete_flag` int(11) DEFAULT '1' COMMENT '1-normal;2-deleted',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

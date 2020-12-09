@@ -16,7 +16,7 @@ public class NameSpaceConfigDAOImpl implements NameSpaceConfigDAO {
     private ExecutorFactory executorFactory;
 
     @Override
-    public int addNameSpace(NameSpaceConfig nameSpace) {
+    public int addNameSpaceConfig(NameSpaceConfig nameSpace) {
         Executor executor = executorFactory.newExecutor();
         try {
             int i = executor.add(nameSpace);
@@ -28,7 +28,7 @@ public class NameSpaceConfigDAOImpl implements NameSpaceConfigDAO {
     }
 
     @Override
-    public int updateNameSpace(NameSpaceConfig nameSpace) {
+    public int updateNameSpaceConfig(NameSpaceConfig nameSpace) {
         Executor executor = executorFactory.newExecutor();
         try {
             int i = executor.updateById(nameSpace);
@@ -40,7 +40,19 @@ public class NameSpaceConfigDAOImpl implements NameSpaceConfigDAO {
     }
 
     @Override
-    public int deleteNameSpace(List<Long> ids) {
+    public int batchUpdateNameSpaceConfig(List<NameSpaceConfig> nameSpaces) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            int i = executor.batchUpdateById(nameSpaces);
+            executor.commit();
+            return i;
+        }finally {
+            executor.close();
+        }
+    }
+
+    @Override
+    public int deleteNameSpaceConfig(List<Long> ids) {
         Executor executor = executorFactory.newExecutor();
         try {
             int i = executor.delete(NameSpaceConfig.class, ids);
@@ -52,7 +64,7 @@ public class NameSpaceConfigDAOImpl implements NameSpaceConfigDAO {
     }
 
     @Override
-    public List<NameSpaceConfig> getNameSpaceList(NameSpaceConfig nameSpace) {
+    public List<NameSpaceConfig> getNameSpaceConfigList(NameSpaceConfig nameSpace) {
         Executor executor = executorFactory.newExecutor();
         try {
             List<NameSpaceConfig> list = executor.getList(NameSpaceConfig.class, nameSpace);
@@ -64,12 +76,36 @@ public class NameSpaceConfigDAOImpl implements NameSpaceConfigDAO {
     }
 
     @Override
-    public int batchAdd(List<NameSpaceConfig> list) {
+    public List<NameSpaceConfig> getNameSpaceConfigList(NameSpaceConfig nameSpace, int limitStart, int limitEnd) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            List<NameSpaceConfig> list = executor.getList(NameSpaceConfig.class, nameSpace, limitStart, limitEnd);
+            executor.commit();
+            return list;
+        }finally {
+            executor.close();
+        }
+    }
+
+    @Override
+    public int batchAddNameSpaceConfig(List<NameSpaceConfig> list) {
         Executor executor = executorFactory.newExecutor();
         try {
             int i = executor.batchAdd(list);
             executor.commit();
             return i;
+        }finally {
+            executor.close();
+        }
+    }
+
+    @Override
+    public int countNameSpaceConfig(NameSpaceConfig nameSpace) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            int count = executor.count(NameSpaceConfig.class, nameSpace);
+            executor.commit();
+            return count;
         }finally {
             executor.close();
         }

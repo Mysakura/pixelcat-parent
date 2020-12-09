@@ -6,14 +6,20 @@ import java.util.List;
 
 public interface NameSpaceConfigDAO {
 
-    int addNameSpace(NameSpaceConfig nameSpace);
+    int addNameSpaceConfig(NameSpaceConfig nameSpace);
 
-    int updateNameSpace(NameSpaceConfig nameSpace);
+    int updateNameSpaceConfig(NameSpaceConfig nameSpace);
 
-    int deleteNameSpace(List<Long> ids);
+    int batchUpdateNameSpaceConfig(List<NameSpaceConfig> nameSpaces);
 
-    List<NameSpaceConfig> getNameSpaceList(NameSpaceConfig nameSpace);
+    int deleteNameSpaceConfig(List<Long> ids);
 
-    int batchAdd(List<NameSpaceConfig> list);
+    List<NameSpaceConfig> getNameSpaceConfigList(NameSpaceConfig nameSpace);
+
+    List<NameSpaceConfig> getNameSpaceConfigList(NameSpaceConfig nameSpace, int limitStart, int limitEnd);
+
+    int batchAddNameSpaceConfig(List<NameSpaceConfig> list);
+
+    int countNameSpaceConfig(NameSpaceConfig nameSpace);
 
 }
