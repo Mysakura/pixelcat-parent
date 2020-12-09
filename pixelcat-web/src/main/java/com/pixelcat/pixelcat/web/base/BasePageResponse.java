@@ -33,4 +33,14 @@ public class BasePageResponse<T> {
      */
     private Integer recordCount;
 
+    public Integer getPageCount() {
+        if (pageSize != null && recordCount != null){
+            if (recordCount % pageSize == 0){
+                return recordCount/pageSize;
+            }else {
+                return recordCount/pageSize + 1;
+            }
+        }
+        return pageCount;
+    }
 }

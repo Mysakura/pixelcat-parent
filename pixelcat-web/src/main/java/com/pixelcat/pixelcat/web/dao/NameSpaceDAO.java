@@ -18,4 +18,5 @@ public interface NameSpaceDAO {
 
     List<NameSpace> getNameSpaceList(NameSpace nameSpace, int limitStart, int limitEnd);
 
+    int countNameSpace(NameSpace nameSpace);
 }

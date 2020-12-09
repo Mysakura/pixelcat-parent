@@ -23,4 +23,12 @@ public interface NameSpaceService {
 
     BaseResponse<Integer> deleteEnv(NameSpaceRequest request);
 
+    BasePageResponse<NameSpaceDTO> getNameSpaceList(NameSpaceRequest request);
+
+    BaseResponse<Integer> addNameSpace(NameSpaceRequest request);
+
+    BaseResponse<Integer> updateNameSpace(NameSpaceRequest request);
+
+    BaseResponse<Integer> deleteNameSpace(NameSpaceRequest request);
+
 }

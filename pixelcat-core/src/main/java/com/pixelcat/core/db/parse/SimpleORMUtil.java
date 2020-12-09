@@ -447,13 +447,13 @@ public class SimpleORMUtil {
      * @param <T>
      * @return
      */
-    public <T> SqlAndParam parseListSQLFromClass(T obj, Integer limitStart, Integer limitEnd) {
+    public <T> SqlAndParam parseListSQLFromClass(T obj, boolean count, Integer limitStart, Integer limitEnd) {
         try {
             List<Object> params = new ArrayList<>();
             Class<?> clazz = obj.getClass();
             String tableName = getTableName(clazz);
 
-            String sqlBegin = "select * from " + tableName;
+            String sqlBegin = "select "+ (count ? "count(*)" : "*") +" from " + tableName;
             StringBuilder sqlValue = new StringBuilder();
             Field[] declaredFields = clazz.getDeclaredFields();
             boolean needWhere = false;

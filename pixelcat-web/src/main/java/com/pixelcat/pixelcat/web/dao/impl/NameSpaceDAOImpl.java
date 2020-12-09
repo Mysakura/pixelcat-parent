@@ -74,4 +74,16 @@ public class NameSpaceDAOImpl implements NameSpaceDAO {
             executor.close();
         }
     }
+
+    @Override
+    public int countNameSpace(NameSpace nameSpace) {
+        Executor executor = executorFactory.newExecutor();
+        try {
+            int count = executor.count(NameSpace.class, nameSpace);
+            executor.commit();
+            return count;
+        }finally {
+            executor.close();
+        }
+    }
 }

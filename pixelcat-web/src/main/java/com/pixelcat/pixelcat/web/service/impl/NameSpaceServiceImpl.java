@@ -142,4 +142,64 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         response.setData(i);
         return response;
     }
+
+    @Override
+    public BasePageResponse<NameSpaceDTO> getNameSpaceList(NameSpaceRequest request) {
+        BasePageResponse<NameSpaceDTO> response = new BasePageResponse<>();
+        NameSpace record = new NameSpace();
+        record.setDeleteFlag(DeleteEnum.NO.getCode());
+        record.setType(NameSpaceEnum.NAME_SPACE.getCode());
+        record.setProjectName(request.getProjectName());
+        record.setEnvName(request.getEnvName());
+        List<NameSpace> nameSpaceList = nameSpaceDAO.getNameSpaceList(record, request.getLimitStart(), request.getLimitEnd());
+        int count = nameSpaceDAO.countNameSpace(record);
+
+        List<NameSpaceDTO> dataList = new ArrayList<>();
+        nameSpaceList.forEach(e -> {
+            NameSpaceDTO dto = new NameSpaceDTO();
+            BeanUtils.copyProperties(e, dto);
+            dataList.add(dto);
+        });
+        response.setDataList(dataList);
+        response.setPage(request.getPage());
+        response.setPageSize(request.getPageSize());
+        response.setRecordCount(count);
+        return response;
+    }
+
+    @Override
+    public BaseResponse<Integer> addNameSpace(NameSpaceRequest request) {
+        BaseResponse<Integer> response = new BaseResponse<>();
+        NameSpace record = new NameSpace();
+        BeanUtils.copyProperties(request, record);
+        int i = nameSpaceDAO.addNameSpace(record);
+        response.setData(i);
+        return response;
+    }
+
+    @Override
+    public BaseResponse<Integer> updateNameSpace(NameSpaceRequest request) {
+        BaseResponse<Integer> response = new BaseResponse<>();
+        NameSpace record = new NameSpace();
+        BeanUtils.copyProperties(request, record);
+        int i = nameSpaceDAO.updateNameSpace(record);
+        response.setData(i);
+        return response;
+    }
+
+    @Override
+    public BaseResponse<Integer> deleteNameSpace(NameSpaceRequest request) {
+        BaseResponse<Integer> response = new BaseResponse<>();
+        List<NameSpace> list = new ArrayList<>();
+        request.getIds().forEach(id -> {
+            NameSpace record = new NameSpace();
+            BeanUtils.copyProperties(request, record);
+            record.setId(id);
+            record.setDeleteFlag(DeleteEnum.YES.getCode());
+            list.add(record);
+        });
+        int i = nameSpaceDAO.batchUpdateNameSpace(list);
+        response.setData(i);
+        return response;
+    }
 }

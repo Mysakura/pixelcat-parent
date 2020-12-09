@@ -120,4 +120,19 @@ public class PreparedStatementHandler implements StatementHandler {
             closeStatement(ps);
         }
     }
+
+    @Override
+    public <T> int count(Class<T> clazz, PreparedStatement ps, List<Object> params) {
+        try {
+            setParams(ps, params);
+            printSQL(ps);
+            ResultSet resultSet = ps.executeQuery();
+            return resultSet.next() ? resultSet.getInt(1) : 0;
+        } catch (SQLException e) {
+            rollback();
+            throw new PixelCatException("com.pixelcat.core.db.executor.PreparedStatementHandler.list异常！", e);
+        } finally {
+            closeStatement(ps);
+        }
+    }
 }

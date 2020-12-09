@@ -66,4 +66,13 @@ public interface Executor {
     <E> List<E> getList(Class<E> clazz, E obj);
 
     <E> List<E> getList(Class<E> clazz, E obj, Integer limitStart, Integer limitEnd);
+
+    /**
+     * count
+     * @param clazz
+     * @param obj
+     * @param <T>
+     * @return
+     */
+    <T> int count(Class<T> clazz, T obj);
 }

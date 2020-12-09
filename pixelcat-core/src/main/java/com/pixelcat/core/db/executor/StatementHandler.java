@@ -16,4 +16,6 @@ public interface StatementHandler {
 
     <E> List<E> list(Class<E> clazz, PreparedStatement ps, List<Object> params);
 
+    <T> int count(Class<T> clazz, PreparedStatement ps, List<Object> params);
+
 }

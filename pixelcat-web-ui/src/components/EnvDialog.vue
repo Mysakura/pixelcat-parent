@@ -265,8 +265,7 @@
             
             deleteNameSpaceItem () {
                 if (this.selected == "") {
-                    this.snackbar = true;
-                    this.text = "请先选择数据！";
+                    this.showTip("请先选择数据！");
                     return;
                 }
                 this.dialogDelete = true

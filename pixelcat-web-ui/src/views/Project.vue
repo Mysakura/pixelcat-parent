@@ -146,7 +146,7 @@
           </v-card-text>
         </v-card>
         <!--namespace弹框-->
-        <namespace-dialog :namespace-dialog="namespaceDialog" @close="namespaceDialog = false" :current-project="currentProject" :current-env="currentEnv"></namespace-dialog>
+        <namespace-dialog :namespace-dialog="namespaceDialog" @close="namespaceDialog = false" :current-project="currentProject" :current-env="currentEnv" ref="namespaceDialog"></namespace-dialog>
         <!--提示-->
         <v-snackbar
                 v-model="snackbar"
@@ -410,11 +410,10 @@
         this.namespaceDialog = true;
         this.currentProject = projectName;
         this.currentEnv = envName;
-
+        this.$refs.namespaceDialog.init(projectName, envName);
       },
 
       openEnv (projectName) {
-        console.log("632",projectName)
         this.currentProject = projectName;
         this.envDialog = true;
         // 调用子组件的初始化方法

@@ -29,10 +29,10 @@
                 </v-toolbar>
                 <v-card-text>
                     <v-data-table
-                            v-model="namespaceSelected"
+                            v-model="selected"
                             show-select
                             :headers="namespaceHeaders"
-                            :items="namespaces"
+                            :items="dataList"
                             item-key="name"
                             class="elevation-1"
                             :page.sync="page"
@@ -83,7 +83,7 @@
                                                     </v-col>
                                                     <v-col cols="12">
                                                         <v-text-field
-                                                                v-model="editedItem.namespace"
+                                                                v-model="editedItem.name"
                                                                 label="Namespace"
                                                         ></v-text-field>
                                                     </v-col>
@@ -120,13 +120,19 @@
                                     <v-icon small>mdi-delete</v-icon>
                                     删除
                                 </v-btn>
+                                <v-btn
+                                        small
+                                        dark
+                                        class="ml-2 mb-2"
+                                        @click="init(currentProject, currentEnv)"
+                                >
+                                    <v-icon small>mdi-refresh</v-icon>
+                                    刷新
+                                </v-btn>
 
                                 <v-dialog v-model="dialogDelete" max-width="500px">
                                     <v-card>
-                                        <v-card-title class="headline">确定删除此项目？</v-card-title>
-                                        <v-card-text>
-                                            {{namespaceSelected}}
-                                        </v-card-text>
+                                        <v-card-title class="headline">确定删除选中项目？</v-card-title>
                                         <v-card-actions>
                                             <v-spacer></v-spacer>
                                             <v-btn color="blue darken-1" text @click="closeDelete">取消</v-btn>
@@ -210,33 +216,14 @@
             dialog: false,
             dialogDelete: false,
             configDialog: false,
-            namespaceSelected: [],
-            namespaces: [
-                {
-                    name: 'Frozen Yogurt',
-                    envName: ['测试1','测试2'],
-                    namespace: 'dubbo.properties',
-                    userName: 'AAA',
-                    updateTime: '2020-12-07 14:53:00',
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    envName: ['测试1','测试2'],
-                    namespace: 'zk.properties',
-                    userName: 'AAA',
-                    updateTime: '2020-12-07 14:53:00',
-                }
-            ],
+            selected: [],
+            dataList: [],
             editedIndex: -1,
             editedItem: {
                 name: '',
-                envName: 0,
-                namespace: '',
             },
             defaultItem: {
                 name: '',
-                envName: 0,
-                namespace: '',
             },
 
         }),
@@ -251,15 +238,15 @@
                     {
                         text: 'NameSpace',
                         align: 'start',
-                        value: 'namespace',
+                        value: 'name',
                     },
                     {
                         text: '操作人',
-                        value: 'userName',
+                        value: 'username',
                     },
                     {
                         text: '操作时间',
-                        value: 'updateTime',
+                        value: 'updateTimeStr',
                     },
                     { text: '操作', value: 'actions' }
                 ]
@@ -270,27 +257,99 @@
             },
 
         },
+        watch:{
+            page(){
+                this.init(this.currentProject, this.currentEnv);
+            }
+        },
         methods: {
+            init(projectName, envName){
+                let me = this;
+                me.getDataForTable(projectName, envName)
+                    .then(data => {
+                        me.$nextTick(() => {
+                            me.dataList = data.dataList;
+                            me.page = data.page;
+                            me.pageCount = data.pageCount;
+                            console.log("NameSpace列表", me.dataList)
+                        })
+                    })
+            },
+            showTip(text){
+                this.snackbar = true;
+                this.text = text;
+            },
+            getDataForTable (projectName, envName) {
+                let me = this;
+                return new Promise((resolve, reject) => {
+                    let params = {
+                        projectName: projectName,
+                        envName: envName,
+                        page: me.page,
+                        pageSize: me.pageSize,
+                    };
+                    me.$axios.post('/namespace/list', params)
+                    // 请求成功后
+                        .then(function (response) {
+                            let data = response.data;
+                            let dataList = data.dataList;
+                            let page = data.page;
+                            let pageCount = data.pageCount;
+                            resolve({
+                                dataList,
+                                page,
+                                pageCount
+                            })
+                        })
+                        // 请求失败处理
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                })
+            },
             deleteNameSpaceItem () {
-                if (this.namespaceSelected == "") {
-                    this.snackbar = true;
-                    this.text = "请先选择数据！";
+                if (this.selected == "") {
+                    this.showTip("请先选择数据！");
                     return;
                 }
                 this.dialogDelete = true
             },
             editItem (item) {
-                this.editedIndex = this.namespaces.indexOf(item)
+                this.editedIndex = this.dataList.indexOf(item)
                 this.editedItem = Object.assign({}, item)
                 this.dialog = true
             },
             deleteItemConfirm () {
-                this.namespaces.splice(this.editedIndex, 1)
-                this.closeDelete()
+                // this.dataList.splice(this.editedIndex, 1)
+                let me = this;
+                let ids = new Array();
+                me.selected.forEach((item, index, arr) => {
+                    ids.push(item.id);
+                })
+
+                let params = {
+                    ids: ids,
+                };
+                me.$axios.post('/namespace/delete', params)
+                // 请求成功后
+                    .then(function (response) {
+                        let data = response.data;
+                        if (data.code === 0)
+                            me.showTip("删除成功！");
+                        else
+                            me.showTip("删除失败！" + data.message);
+                    })
+                    // 请求失败处理
+                    .catch(function (error) {
+                        console.log(error);
+                        me.showTip(error);
+                    });
+                this.closeDelete();
             },
 
             close () {
                 this.dialog = false
+                this.init(this.currentProject, this.currentEnv);
                 this.$nextTick(() => {
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
@@ -299,16 +358,60 @@
 
             closeDelete () {
                 this.dialogDelete = false
+                this.init(this.currentProject, this.currentEnv);
                 this.$nextTick(() => {
                     this.editedItem = Object.assign({}, this.defaultItem)
                     this.editedIndex = -1
                 })
             },
             save () {
+                let me = this;
+
                 if (this.editedIndex > -1) {
-                    Object.assign(this.namespaces[this.editedIndex], this.editedItem)
+                    // Object.assign(this.dataList[this.editedIndex], this.editedItem)
+                    let params = {
+                        id: me.editedItem.id,
+                        type: 3,
+                        name: me.editedItem.name,
+                    };
+                    me.$axios.post('/namespace/update', params)
+                    // 请求成功后
+                        .then(function (response) {
+                            let data = response.data;
+                            if (data.code === 0) {
+                                me.showTip("修改成功！");
+                            } else {
+                                me.showTip("修改失败！" + data.message);
+                            }
+                        })
+                        // 请求失败处理
+                        .catch(function (error) {
+                            console.log(error);
+                            me.showTip(error);
+                        });
                 } else {
-                    this.namespaces.push(this.editedItem)
+                    // this.dataList.push(this.editedItem)
+                    let params = {
+                        type: 3,
+                        name: me.editedItem.name,
+                        projectName: me.currentProject,
+                        envName: me.currentEnv,
+                    };
+                    me.$axios.post('/namespace/add', params)
+                    // 请求成功后
+                        .then(function (response) {
+                            let data = response.data;
+                            if (data.code === 0){
+                                me.showTip("新增成功！");
+                            } else {
+                                me.showTip("新增失败！" + data.message);
+                            }
+                        })
+                        // 请求失败处理
+                        .catch(function (error) {
+                            console.log(error);
+                            me.showTip(error);
+                        });
                 }
                 this.close()
             },
