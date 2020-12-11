@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.pixelcat.spring.boot.autoconfigure.PixelCatAutoConfiguration
+  com.pixelcat.spring.boot.autoconfigure.PixelCatAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.pixelcat.spring.boot.autoconfigure.init.PixelCatConfigEnvironmentProcessor

@@ -1,11 +1,14 @@
 package com.pixelcat.core.db;
 
+import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import com.pixelcat.core.db.executor.BaseExecutor;
 import com.pixelcat.core.db.executor.Executor;
 import com.pixelcat.core.db.executor.ExecutorFactory;
 import com.pixelcat.core.db.parse.SimpleORMUtil;
 import com.pixelcat.core.db.pool.DefaultDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -14,13 +17,15 @@ import java.util.List;
 import java.util.Random;
 
 @Slf4j
-public class DefaultExecutorFactory implements ExecutorFactory {
+public class DefaultExecutorFactory implements ExecutorFactory, EnvironmentAware {
+    public static final String BEAN_NAME = "defaultExecutorFactory";
 
     private DataSource dataSource;
 
+    private Environment environment;
 
-    public DefaultExecutorFactory(String driver, String url, String username, String password) {
-        dataSource = new DefaultDataSourceFactory().getDataSource(driver, url, username, password);
+    public DefaultExecutorFactory() {
+
     }
 
     @Override
@@ -63,5 +68,14 @@ public class DefaultExecutorFactory implements ExecutorFactory {
     }
 
 
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+        String driver = environment.getProperty(PixelCatPropertiesConstant.DRIVER);
+        String url = environment.getProperty(PixelCatPropertiesConstant.URL);
+        String username = environment.getProperty(PixelCatPropertiesConstant.USERNAME);
+        String password = environment.getProperty(PixelCatPropertiesConstant.PASSWORD);
+        dataSource = new DefaultDataSourceFactory().getDataSource(driver, url, username, password);
+    }
 }
 

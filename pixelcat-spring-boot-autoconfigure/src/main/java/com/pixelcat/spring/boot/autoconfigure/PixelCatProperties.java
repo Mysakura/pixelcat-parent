@@ -1,11 +1,13 @@
 package com.pixelcat.spring.boot.autoconfigure;
 
+import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("pixelcat")
+@ConfigurationProperties(PixelCatPropertiesConstant.PREFIX)
 @Data
 public class PixelCatProperties {
+    public static final String BEAN_NAME = "pixelCatProperties";
 
 
     /**
@@ -36,12 +38,12 @@ public class PixelCatProperties {
     /**
      * 空闲时间
      */
-    private Integer zkSleepTimeMs = 1000;
+    private String zkSleepTimeMs = "1000";
 
     /**
      * 重试次数
      */
-    private Integer zkMaxRetries = 3;
+    private String zkMaxRetries = "3";
 
     /**
      *
@@ -54,5 +56,14 @@ public class PixelCatProperties {
      */
     private String centerUrl = "http://127.0.0.1:9000";
 
+    /**
+     * 客户端：项目ID
+     */
+    private String projectId;
+
+    /**
+     * 客户端：环境ID
+     */
+    private String envId;
 
 }

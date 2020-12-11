@@ -2,23 +2,30 @@ package com.pixelcat.spring.boot.autoconfigure.listener;
 
 import com.pixelcat.core.zk.BaseNodeListener;
 import com.pixelcat.core.zk.subject.ConfigSubject;
+import com.pixelcat.core.zk.subject.DefaultConfigSubject;
 import com.pixelcat.core.zk.subject.event.ConfigCreateEvent;
 import com.pixelcat.core.zk.subject.event.ConfigDeleteEvent;
 import com.pixelcat.core.zk.subject.event.ConfigUpdateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-public class DefaultNodeListener extends BaseNodeListener {
+public class DefaultNodeListener extends BaseNodeListener implements ApplicationContextAware {
+    public static final String BEAN_NAME = "defaultNodeListener";
 
     private ConfigSubject configSubject;
 
+    private ApplicationContext applicationContext;
+
     @Autowired
-    public DefaultNodeListener(ConfigSubject configSubject) {
-        this.configSubject = configSubject;
+    public DefaultNodeListener() {
+
     }
 
     @Override
@@ -50,5 +57,11 @@ public class DefaultNodeListener extends BaseNodeListener {
             log.debug("删除节点：{} + {}", path, data);
         }
         configSubject.publishEvent(new ConfigDeleteEvent(path, data));
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        this.configSubject = applicationContext.getBean(DefaultConfigSubject.BEAN_NAME, ConfigSubject.class);
     }
 }

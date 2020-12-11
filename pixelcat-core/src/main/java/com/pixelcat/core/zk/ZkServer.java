@@ -1,5 +1,6 @@
 package com.pixelcat.core.zk;
 
+import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -7,6 +8,8 @@ import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -17,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  *  zk存储结构： /pixelcat/[env]/[project]/[namespace]/XXX
  */
-public class ZkServer {
+public class ZkServer implements EnvironmentAware {
+    public static final String BEAN_NAME = "zkServer";
 
     private static final Map<String, PathChildrenCache> PATH_LISTENER_MAP = new ConcurrentHashMap<>();
 
@@ -27,11 +31,10 @@ public class ZkServer {
 
     private static CuratorFramework client;
 
+    private Environment environment;
 
-    public ZkServer(String connectString, int baseSleepTimeMs, int maxRetries) {
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries);
-        client = CuratorFrameworkFactory.newClient(connectString, retryPolicy);
-        client.start();
+    public ZkServer() {
+
     }
 
     /**
@@ -206,16 +209,14 @@ public class ZkServer {
         TREE_LISTENER_MAP.put(path, cache);
     }
 
-
-
-    public static void main(String[] a) throws Exception {
-        ZkServer zkServer = new ZkServer("127.0.0.1:2181", 1000, 3);
-
-//        zkServer.setPathValue("/pixelcat/root/user/local/java", "D");
-//        zkServer.createPersistentPath("/pixelcat/root/user/local/java", "B");
-//        zkServer.createEphemeralPath(rootPath + "/b/f/d", "A");
-        System.out.println(zkServer.listPath("/"));
-//        System.out.println(zkServer.listPath(rootPath));
-
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+        String connectString = environment.getProperty(PixelCatPropertiesConstant.ZK_URL);
+        String baseSleepTimeMs = environment.getProperty(PixelCatPropertiesConstant.ZK_SLEEP_TIME_MS);
+        String maxRetries = environment.getProperty(PixelCatPropertiesConstant.ZK_MAX_RETRIES);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(Integer.valueOf(baseSleepTimeMs), Integer.valueOf(maxRetries));
+        client = CuratorFrameworkFactory.newClient(connectString, retryPolicy);
+        client.start();
     }
 }

@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 @Slf4j
 public class DefaultConfigSubject implements ConfigSubject {
+    public static final String BEAN_NAME = "defaultConfigSubject";
 
     private static final ConcurrentLinkedQueue<ConfigChangeListener> LISTENERS = new ConcurrentLinkedQueue<>();
 

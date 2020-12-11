@@ -1,20 +1,25 @@
 package com.pixelcat.core.zk.handle;
 
+import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.zk.ZkServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
 
 @Slf4j
-public class DefaultConfigHandler implements ConfigHandler {
+public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAware {
+    public static final String BEAN_NAME = "defaultConfigHandler";
 
     private ZkServer zkServer;
     private String rootPath;
+    private ApplicationContext applicationContext;
 
-    public DefaultConfigHandler(ZkServer zkServer, String rootPath) {
-        this.zkServer = zkServer;
-        this.rootPath = rootPath;
+    public DefaultConfigHandler() {
+
     }
 
     private String prePath(String path){
@@ -71,5 +76,12 @@ public class DefaultConfigHandler implements ConfigHandler {
             log.error("设置节点value失败！", e);
             throw new PixelCatException("设置节点value失败！Cause：" + e.getMessage());
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+        this.zkServer = applicationContext.getBean(ZkServer.class);
+        this.rootPath = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ZK_ROOT_PATH);
     }
 }
