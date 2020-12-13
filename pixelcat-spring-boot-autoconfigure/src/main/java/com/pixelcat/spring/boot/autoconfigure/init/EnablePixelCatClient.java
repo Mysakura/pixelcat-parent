@@ -8,6 +8,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(ConfigClientInit.class)
+//@Import(ConfigClientInit.class)
+@Import(PixelCatClientBeanDefinitionRegistrar.class)
 public @interface EnablePixelCatClient {
 }

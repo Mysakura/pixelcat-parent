@@ -10,11 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 @Slf4j
 public class DefaultExecutorFactory implements ExecutorFactory, EnvironmentAware {
@@ -25,7 +23,15 @@ public class DefaultExecutorFactory implements ExecutorFactory, EnvironmentAware
     private Environment environment;
 
     public DefaultExecutorFactory() {
+    }
 
+    @PostConstruct
+    public void init(){
+        String driver = environment.getProperty(PixelCatPropertiesConstant.DRIVER);
+        String url = environment.getProperty(PixelCatPropertiesConstant.URL);
+        String username = environment.getProperty(PixelCatPropertiesConstant.USERNAME);
+        String password = environment.getProperty(PixelCatPropertiesConstant.PASSWORD);
+        dataSource = new DefaultDataSourceFactory().getDataSource(driver, url, username, password);
     }
 
     @Override
@@ -71,11 +77,6 @@ public class DefaultExecutorFactory implements ExecutorFactory, EnvironmentAware
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
-        String driver = environment.getProperty(PixelCatPropertiesConstant.DRIVER);
-        String url = environment.getProperty(PixelCatPropertiesConstant.URL);
-        String username = environment.getProperty(PixelCatPropertiesConstant.USERNAME);
-        String password = environment.getProperty(PixelCatPropertiesConstant.PASSWORD);
-        dataSource = new DefaultDataSourceFactory().getDataSource(driver, url, username, password);
     }
 }
 

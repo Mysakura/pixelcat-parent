@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 @Slf4j
 public class DefaultNodeListener extends BaseNodeListener implements ApplicationContextAware {
@@ -23,9 +23,12 @@ public class DefaultNodeListener extends BaseNodeListener implements Application
 
     private ApplicationContext applicationContext;
 
-    @Autowired
     public DefaultNodeListener() {
+    }
 
+    @PostConstruct
+    public void init(){
+        this.configSubject = applicationContext.getBean(DefaultConfigSubject.BEAN_NAME, ConfigSubject.class);
     }
 
     @Override
@@ -62,6 +65,5 @@ public class DefaultNodeListener extends BaseNodeListener implements Application
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        this.configSubject = applicationContext.getBean(DefaultConfigSubject.BEAN_NAME, ConfigSubject.class);
     }
 }

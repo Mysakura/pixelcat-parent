@@ -13,6 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +36,16 @@ public class ZkServer implements EnvironmentAware {
 
     public ZkServer() {
 
+    }
+
+    @PostConstruct
+    public void init(){
+        String connectString = environment.getProperty(PixelCatPropertiesConstant.ZK_URL);
+        String baseSleepTimeMs = environment.getProperty(PixelCatPropertiesConstant.ZK_SLEEP_TIME_MS);
+        String maxRetries = environment.getProperty(PixelCatPropertiesConstant.ZK_MAX_RETRIES);
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(Integer.valueOf(baseSleepTimeMs), Integer.valueOf(maxRetries));
+        client = CuratorFrameworkFactory.newClient(connectString, retryPolicy);
+        client.start();
     }
 
     /**
@@ -212,11 +223,5 @@ public class ZkServer implements EnvironmentAware {
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
-        String connectString = environment.getProperty(PixelCatPropertiesConstant.ZK_URL);
-        String baseSleepTimeMs = environment.getProperty(PixelCatPropertiesConstant.ZK_SLEEP_TIME_MS);
-        String maxRetries = environment.getProperty(PixelCatPropertiesConstant.ZK_MAX_RETRIES);
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(Integer.valueOf(baseSleepTimeMs), Integer.valueOf(maxRetries));
-        client = CuratorFrameworkFactory.newClient(connectString, retryPolicy);
-        client.start();
     }
 }

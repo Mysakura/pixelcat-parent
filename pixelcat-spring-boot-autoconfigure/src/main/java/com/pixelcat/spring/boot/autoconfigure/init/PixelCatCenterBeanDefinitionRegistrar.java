@@ -22,8 +22,6 @@ public class PixelCatCenterBeanDefinitionRegistrar implements ImportBeanDefiniti
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         // 属性绑定
         registerBeanDefinition(PixelCatConfigurationPropertiesBinder.BEAN_NAME, PixelCatConfigurationPropertiesBinder.class, registry);
-        // 后置处理器
-        registerBeanDefinition(PixelCatConfigurationPropertiesBindingPostProcessor.BEAN_NAME, PixelCatConfigurationPropertiesBindingPostProcessor.class, registry);
 
         registerBeanDefinition(ZkServer.BEAN_NAME, ZkServer.class, registry);
         registerBeanDefinition(DefaultConfigHandler.BEAN_NAME, DefaultConfigHandler.class, registry);

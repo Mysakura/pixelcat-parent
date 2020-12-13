@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
 public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAware {
     public static final String BEAN_NAME = "defaultConfigHandler";
@@ -20,6 +22,12 @@ public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAw
 
     public DefaultConfigHandler() {
 
+    }
+
+    @PostConstruct
+    public void init(){
+        this.zkServer = applicationContext.getBean(ZkServer.class);
+        this.rootPath = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ZK_ROOT_PATH);
     }
 
     private String prePath(String path){
@@ -81,7 +89,5 @@ public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAw
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
-        this.zkServer = applicationContext.getBean(ZkServer.class);
-        this.rootPath = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ZK_ROOT_PATH);
     }
 }
