@@ -1,21 +1,26 @@
 package com.pixelcat.pixelcat.web.service.impl;
 
+import com.pixelcat.core.config.NameSpaceInitDTO;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
+import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.enums.DeleteEnum;
 import com.pixelcat.pixelcat.web.base.enums.NameSpaceEnum;
-import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
+import com.pixelcat.pixelcat.web.dao.NameSpaceConfigDAO;
 import com.pixelcat.pixelcat.web.dao.NameSpaceDAO;
 import com.pixelcat.pixelcat.web.domain.NameSpace;
+import com.pixelcat.pixelcat.web.domain.NameSpaceConfig;
 import com.pixelcat.pixelcat.web.service.NameSpaceService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +28,9 @@ public class NameSpaceServiceImpl implements NameSpaceService {
 
     @Autowired
     private NameSpaceDAO nameSpaceDAO;
+
+    @Autowired
+    private NameSpaceConfigDAO nameSpaceConfigDAO;
 
     @Override
     public BasePageResponse<NameSpaceDTO> getProjectList() {
@@ -196,6 +204,46 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         });
         int i = nameSpaceDAO.batchUpdateNameSpace(list);
         response.setData(i);
+        return response;
+    }
+
+    @Override
+    public BasePageResponse<NameSpaceInitDTO> initConfig(NameSpaceRequest request) {
+        List<NameSpaceInitDTO> result = new ArrayList<>();
+        BasePageResponse<NameSpaceInitDTO> response = new BasePageResponse<>();
+        NameSpace record = new NameSpace();
+        record.setDeleteFlag(DeleteEnum.NO.getCode());
+        record.setType(NameSpaceEnum.NAME_SPACE.getCode());
+        record.setProjectId(request.getProjectId());
+        record.setEnvId(request.getEnvId());
+        List<NameSpace> nameSpaceList = nameSpaceDAO.getNameSpaceList(record);
+        Set<Long> ids = nameSpaceList.stream().map(NameSpace::getId).collect(Collectors.toSet());
+
+
+        NameSpaceConfig config = new NameSpaceConfig();
+        config.setDeleteFlag(DeleteEnum.NO.getCode());
+        config.setNamespaceIds(new ArrayList<>(ids));
+        List<NameSpaceConfig> configList = nameSpaceConfigDAO.getNameSpaceConfigList(config);
+        if (!CollectionUtils.isEmpty(configList)){
+            Map<Long, List<NameSpaceConfig>> collect = configList.stream().collect(Collectors.groupingBy(NameSpaceConfig::getNamespaceId));
+            nameSpaceList.forEach(n -> {
+                NameSpaceInitDTO dto = new NameSpaceInitDTO();
+                BeanUtils.copyProperties(n, dto);
+                List<NameSpaceConfig> configs = collect.get(n.getId());
+                if (configs != null){
+                    List<NameSpaceInitDTO.ConfigDTO> cList = new ArrayList<>();
+                    configs.forEach(c -> {
+                        NameSpaceInitDTO.ConfigDTO configDTO = new NameSpaceInitDTO.ConfigDTO();
+                        BeanUtils.copyProperties(c, configDTO);
+                        cList.add(configDTO);
+                    });
+                    dto.setConfigList(cList);
+                }
+                result.add(dto);
+            });
+            response.setDataList(result);
+        }
+
         return response;
     }
 }

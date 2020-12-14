@@ -22,7 +22,7 @@
         <mysql>5.1.49</mysql>
         <logback>1.2.3</logback>
         <slf4j>1.7.25</slf4j>
-        <okhttp>4.9.0</okhttp>
+        <okhttp>3.14.9</okhttp>
         <commons-lang3>3.11</commons-lang3>
     </properties>
 

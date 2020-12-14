@@ -1,9 +1,9 @@
 package com.pixelcat.core.http;
 
 import com.pixelcat.core.exception.PixelCatException;
+import com.sun.istack.internal.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +53,7 @@ public class OkHttpUtil {
     }
 
     public void post(String url, String bodyJson, HttpResultHandler handler) {
-        RequestBody body = RequestBody.create(bodyJson, JSON);
+        RequestBody body = RequestBody.create(JSON, bodyJson);
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)

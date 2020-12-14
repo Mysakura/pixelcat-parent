@@ -54,7 +54,7 @@ public class PixelCatProperties {
     /**
      * 配置中心地址
      */
-    private String centerUrl = "http://127.0.0.1:9000";
+    private String centerUrl = "http://127.0.0.1:8888";
 
     /**
      * 客户端：项目ID

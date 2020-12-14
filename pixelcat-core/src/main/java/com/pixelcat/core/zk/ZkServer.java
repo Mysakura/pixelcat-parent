@@ -220,6 +220,13 @@ public class ZkServer implements EnvironmentAware {
         TREE_LISTENER_MAP.put(path, cache);
     }
 
+    /**
+     * 关闭连接
+     */
+    public void close(){
+        client.close();
+    }
+
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;

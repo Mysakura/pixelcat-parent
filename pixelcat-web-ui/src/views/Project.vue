@@ -120,7 +120,7 @@
                         @click="openNamespace(item, env)"
                         v-for="env in item.envList"
                         :key="env.name"
-                >{{env.name}}</v-btn>
+                >{{env.id}}:{{env.name}}</v-btn>
               </template>
               <template v-slot:item.actions="{ item }">
                 <v-btn
@@ -221,12 +221,17 @@
       headers () {
         return [
           {
+            text: 'ID',
+            align: 'start',
+            value: 'id',
+          },
+          {
             text: '项目',
             align: 'start',
             value: 'name',
           },
           {
-            text: '环境',
+            text: 'ID:环境',
             value: 'envList',
           },
           {

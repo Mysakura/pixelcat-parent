@@ -205,6 +205,11 @@
             headers () {
                 return [
                     {
+                        text: 'ID',
+                        align: 'start',
+                        value: 'id',
+                    },
+                    {
                         text: '环境',
                         align: 'start',
                         value: 'name',

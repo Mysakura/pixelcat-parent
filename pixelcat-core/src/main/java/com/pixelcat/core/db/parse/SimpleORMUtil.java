@@ -44,6 +44,10 @@ public class SimpleORMUtil {
                 if (annotation == null){
                     throw new PixelCatException("Class["+ clazz.getName() +"]的["+ name +"]成员变量缺失@DbColumn注解！");
                 }
+                if (f.getDeclaredAnnotation(DbInQuery.class) != null){
+                    // 跳过in查询条件注释的字段，它不属于数据库字段的一部分
+                    continue;
+                }
                 String dbFieldName = annotation.value();
 
                 Object o = dataMap.get(dbFieldName);
@@ -86,6 +90,17 @@ public class SimpleORMUtil {
         }
         // 数据库字段名
         return annotation.value();
+    }
+
+    /**
+     * in查询注解
+     * @param f
+     * @return
+     */
+    private Boolean isInQueryField(Field f){
+        f.setAccessible(true);
+        DbInQuery annotation = f.getDeclaredAnnotation(DbInQuery.class);
+        return annotation != null;
     }
 
     /**
@@ -459,8 +474,7 @@ public class SimpleORMUtil {
             boolean needWhere = false;
 
             // select * from user where id = ? and
-            for (int i = 0; i < declaredFields.length; i++){
-                Field f = declaredFields[i];
+            for (Field f : declaredFields){
                 // 数据库字段名
                 String dbFieldName = getFieldName(f);
                 // 字段名为空，跳过
@@ -476,11 +490,26 @@ public class SimpleORMUtil {
                         if (v.length() == 0){
                             continue;
                         }
+                    } else if (o instanceof List){
+                        List v = (List) o;
+                        if (v.isEmpty()){
+                            continue;
+                        }
                     }
                     needWhere = true;
                     sqlValue.append(dbFieldName);
-                    sqlValue.append(" = ? and ");
-                    params.add(o);
+                    if (isInQueryField(f)){
+                        List v = (List) o;
+                        List<String> placeHolder = new ArrayList<>();
+                        for (int i = 0; i < v.size(); i++){
+                            placeHolder.add("?");
+                        }
+                        sqlValue.append(" in ("+ String.join(",", placeHolder) +") and ");
+                        params.addAll(v);
+                    }else {
+                        sqlValue.append(" = ? and ");
+                        params.add(o);
+                    }
                 }
             }
             String sql = sqlBegin;

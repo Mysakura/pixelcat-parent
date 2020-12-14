@@ -9,6 +9,8 @@ public interface ConfigHandler {
 
     void addWatcher(TreeCacheListener listener) throws Exception;
 
+    void addWatcher(TreeCacheListener listener, String path) throws Exception;
+
     void createEphemeralPath(String path, String value);
 
     void deletePath(String path);
@@ -16,4 +18,6 @@ public interface ConfigHandler {
     String getPathValue(String path);
 
     void setPathValue(String path, String value);
+
+    String listPath();
 }

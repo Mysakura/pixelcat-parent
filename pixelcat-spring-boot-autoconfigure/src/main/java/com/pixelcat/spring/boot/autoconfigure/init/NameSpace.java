@@ -11,16 +11,16 @@ public class NameSpace {
 
     @DbId
     @DbColumn("id")
-    private long id;
+    private Long id;
 
     @DbColumn("name")
     private String name;
 
-    @DbColumn("project_name")
-    private String projectName;
+    @DbColumn("project_id")
+    private Long projectId;
 
-    @DbColumn("env_name")
-    private String envName;
+    @DbColumn("env_id")
+    private Long envId;
 
     @DbColumn("type")
     private int type;
