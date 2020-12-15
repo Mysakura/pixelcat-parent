@@ -54,7 +54,7 @@ public class ConfigClientInit implements ApplicationListener<ContextRefreshedEve
             JSONObject jsonObject = JSON.parseObject(json);
             String dataList = jsonObject.getString("dataList");
             List<NameSpaceInit> initList = JSON.parseArray(dataList, NameSpaceInit.class);
-
+            // TODO
         });
 
         // 2. zk监听
