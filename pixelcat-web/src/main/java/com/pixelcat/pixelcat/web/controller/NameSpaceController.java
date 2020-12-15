@@ -1,12 +1,12 @@
 package com.pixelcat.pixelcat.web.controller;
 
 
-import com.pixelcat.core.config.NameSpaceInitDTO;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
 import com.pixelcat.pixelcat.web.service.NameSpaceService;
+import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ public class NameSpaceController {
     private NameSpaceService nameSpaceService;
 
     @RequestMapping("/initConfig")
-    public BasePageResponse<NameSpaceInitDTO> initConfig(@RequestBody NameSpaceRequest request){
+    public BasePageResponse<NameSpaceInit> initConfig(@RequestBody NameSpaceRequest request){
         return nameSpaceService.initConfig(request);
     }
 

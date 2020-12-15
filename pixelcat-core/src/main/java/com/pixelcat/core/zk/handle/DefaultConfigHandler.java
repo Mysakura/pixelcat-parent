@@ -110,7 +110,9 @@ public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAw
     @Override
     public void destroy() throws Exception {
         // 删除建立的节点
-        zkServer.deletePath(rootPath);
+        if (zkServer.isExit(rootPath)) {
+            zkServer.deletePath(rootPath);
+        }
         // 关闭连接
         zkServer.close();
     }

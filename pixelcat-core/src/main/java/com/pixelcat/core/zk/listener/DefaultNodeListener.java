@@ -1,6 +1,7 @@
-package com.pixelcat.spring.boot.autoconfigure.listener;
+package com.pixelcat.core.zk.listener;
 
-import com.pixelcat.core.zk.BaseNodeListener;
+import com.pixelcat.core.zk.AbstractNodeListener;
+import com.pixelcat.core.zk.subject.ConfigChangeListener;
 import com.pixelcat.core.zk.subject.ConfigSubject;
 import com.pixelcat.core.zk.subject.DefaultConfigSubject;
 import com.pixelcat.core.zk.subject.event.ConfigCreateEvent;
@@ -15,8 +16,11 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * ZK节点监听，事件由configSubject来传播，接收者为 {@link ConfigChangeListener}
+ */
 @Slf4j
-public class DefaultNodeListener extends BaseNodeListener implements ApplicationContextAware {
+public class DefaultNodeListener extends AbstractNodeListener implements ApplicationContextAware {
     public static final String BEAN_NAME = "defaultNodeListener";
 
     private ConfigSubject configSubject;

@@ -4,7 +4,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
-public abstract class BaseNodeListener implements TreeCacheListener {
+public abstract class AbstractNodeListener implements TreeCacheListener {
 
     @Override
     public void childEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) throws Exception {

@@ -1,11 +1,11 @@
-package com.pixelcat.core.config;
+package com.pixelcat.spring.boot.autoconfigure.domain;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class NameSpaceInitDTO {
+public class NameSpaceInit {
 
     private Long id;
 

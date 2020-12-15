@@ -1,6 +1,5 @@
 package com.pixelcat.pixelcat.web.service.impl;
 
-import com.pixelcat.core.config.NameSpaceInitDTO;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
@@ -12,6 +11,7 @@ import com.pixelcat.pixelcat.web.dao.NameSpaceDAO;
 import com.pixelcat.pixelcat.web.domain.NameSpace;
 import com.pixelcat.pixelcat.web.domain.NameSpaceConfig;
 import com.pixelcat.pixelcat.web.service.NameSpaceService;
+import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -208,9 +208,9 @@ public class NameSpaceServiceImpl implements NameSpaceService {
     }
 
     @Override
-    public BasePageResponse<NameSpaceInitDTO> initConfig(NameSpaceRequest request) {
-        List<NameSpaceInitDTO> result = new ArrayList<>();
-        BasePageResponse<NameSpaceInitDTO> response = new BasePageResponse<>();
+    public BasePageResponse<NameSpaceInit> initConfig(NameSpaceRequest request) {
+        List<NameSpaceInit> result = new ArrayList<>();
+        BasePageResponse<NameSpaceInit> response = new BasePageResponse<>();
         NameSpace record = new NameSpace();
         record.setDeleteFlag(DeleteEnum.NO.getCode());
         record.setType(NameSpaceEnum.NAME_SPACE.getCode());
@@ -227,13 +227,13 @@ public class NameSpaceServiceImpl implements NameSpaceService {
         if (!CollectionUtils.isEmpty(configList)){
             Map<Long, List<NameSpaceConfig>> collect = configList.stream().collect(Collectors.groupingBy(NameSpaceConfig::getNamespaceId));
             nameSpaceList.forEach(n -> {
-                NameSpaceInitDTO dto = new NameSpaceInitDTO();
+                NameSpaceInit dto = new NameSpaceInit();
                 BeanUtils.copyProperties(n, dto);
                 List<NameSpaceConfig> configs = collect.get(n.getId());
                 if (configs != null){
-                    List<NameSpaceInitDTO.ConfigDTO> cList = new ArrayList<>();
+                    List<NameSpaceInit.ConfigDTO> cList = new ArrayList<>();
                     configs.forEach(c -> {
-                        NameSpaceInitDTO.ConfigDTO configDTO = new NameSpaceInitDTO.ConfigDTO();
+                        NameSpaceInit.ConfigDTO configDTO = new NameSpaceInit.ConfigDTO();
                         BeanUtils.copyProperties(c, configDTO);
                         cList.add(configDTO);
                     });

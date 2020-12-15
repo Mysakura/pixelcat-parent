@@ -1,10 +1,10 @@
 package com.pixelcat.pixelcat.web.service;
 
-import com.pixelcat.core.config.NameSpaceInitDTO;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
+import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
 
 public interface NameSpaceService {
 
@@ -32,6 +32,6 @@ public interface NameSpaceService {
 
     BaseResponse<Integer> deleteNameSpace(NameSpaceRequest request);
 
-    BasePageResponse<NameSpaceInitDTO> initConfig(NameSpaceRequest request);
+    BasePageResponse<NameSpaceInit> initConfig(NameSpaceRequest request);
 
 }

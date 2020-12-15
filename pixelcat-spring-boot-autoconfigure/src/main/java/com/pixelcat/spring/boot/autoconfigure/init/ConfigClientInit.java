@@ -1,5 +1,7 @@
 package com.pixelcat.spring.boot.autoconfigure.init;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.http.OkHttpUtil;
@@ -7,10 +9,10 @@ import com.pixelcat.core.zk.handle.ConfigHandler;
 import com.pixelcat.core.zk.handle.DefaultConfigHandler;
 import com.pixelcat.core.zk.subject.ConfigChangeListener;
 import com.pixelcat.core.zk.subject.ConfigSubject;
-import com.pixelcat.spring.boot.autoconfigure.PixelCatProperties;
-import com.pixelcat.spring.boot.autoconfigure.listener.DefaultNodeListener;
+import com.pixelcat.core.zk.listener.DefaultNodeListener;
+import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -18,11 +20,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 客户端初始化配置中心
  * 访问后台提供的http地址，初始化本地分布式配置
  */
+@Slf4j
 public class ConfigClientInit implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
     public static final String BEAN_NAME = "configClientInit";
     private ApplicationContext applicationContext;
@@ -45,20 +49,24 @@ public class ConfigClientInit implements ApplicationListener<ContextRefreshedEve
         String envId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ENV_ID);
         String bodyJson = String.format("{\"projectId\": %s, \"envId\": %s}", projectId, envId);
         // 1. 初始化配置:请求后台地址
-        // 这个或许可以省略，SpringEvent也可以省略，直接用zk监听。或许可以用SpringEvent包装一下
-//        OkHttpUtil.getInstance().post(centerUrl + "/namespace/initConfig", bodyJson, json -> {
-//            System.out.println(json);
-//        });
+        OkHttpUtil.getInstance().post(centerUrl + "/namespace/initConfig", bodyJson, json -> {
+            log.info("初始化配置：{}", json);
+            JSONObject jsonObject = JSON.parseObject(json);
+            String dataList = jsonObject.getString("dataList");
+            List<NameSpaceInit> initList = JSON.parseArray(dataList, NameSpaceInit.class);
+
+        });
 
         // 2. zk监听
         try {
             configHandler.addWatcher(defaultNodeListener, "/" + projectId + "/" + envId);
         } catch (Exception e) {
-            throw new PixelCatException("初始化zk根节点监听失败！" + e.getMessage(), e);
+            throw new PixelCatException("初始化zk节点监听失败！" + e.getMessage(), e);
         }
         // 3. 初始化客户端监听
         ConfigSubject subject = applicationContext.getBean(ConfigSubject.class);
         Collection<ConfigChangeListener> values = applicationContext.getBeansOfType(ConfigChangeListener.class).values();
+        // 添加到subject
         values.forEach(subject::addConfigChangeListener);
     }
 

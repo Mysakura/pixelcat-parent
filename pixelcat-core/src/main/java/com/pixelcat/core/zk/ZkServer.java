@@ -117,6 +117,16 @@ public class ZkServer implements EnvironmentAware {
     }
 
     /**
+     * 节点是否存在
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public boolean isExit(String path) throws Exception {
+        return client.checkExists().forPath(path) != null;
+    }
+
+    /**
      * 列出所有节点
      * @throws Exception
      */

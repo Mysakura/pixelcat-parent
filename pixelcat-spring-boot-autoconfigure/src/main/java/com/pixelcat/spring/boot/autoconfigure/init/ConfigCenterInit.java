@@ -5,6 +5,7 @@ import com.pixelcat.core.db.executor.Executor;
 import com.pixelcat.core.db.executor.ExecutorFactory;
 import com.pixelcat.core.zk.handle.ConfigHandler;
 import com.pixelcat.core.zk.handle.DefaultConfigHandler;
+import com.pixelcat.spring.boot.autoconfigure.domain.NameSpace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
