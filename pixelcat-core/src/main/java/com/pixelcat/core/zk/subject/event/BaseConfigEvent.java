@@ -1,21 +1,34 @@
 package com.pixelcat.core.zk.subject.event;
 
+import java.util.Map;
+
 public abstract class BaseConfigEvent implements ConfigEvent {
 
-    private String path;
-    private String value;
+    private String projectId;
+    private String envId;
+    private String namespace;
+    private Map<String, Object> dataMap;
 
-    public BaseConfigEvent(String path, String value) {
-        this.path = path;
-        this.value = value;
+    public BaseConfigEvent(String projectId, String envId, String namespace, Map<String, Object> dataMap) {
+        this.projectId = projectId;
+        this.envId = envId;
+        this.namespace = namespace;
+        this.dataMap = dataMap;
     }
 
-    public String path() {
-        return path;
+    public String projectId() {
+        return projectId;
     }
 
-    public String value() {
-        return value;
+    public String envId() {
+        return envId;
     }
 
+    public String namespace() {
+        return namespace;
+    }
+
+    public Map<String, Object> dataMap() {
+        return dataMap;
+    }
 }

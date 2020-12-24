@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/namespace")
@@ -21,9 +22,19 @@ public class NameSpaceController {
     @Autowired
     private NameSpaceService nameSpaceService;
 
+    /**
+     * 没啥用
+     * @param request
+     * @return
+     */
     @RequestMapping("/initConfig")
     public BasePageResponse<NameSpaceInit> initConfig(@RequestBody NameSpaceRequest request){
         return nameSpaceService.initConfig(request);
+    }
+
+    @RequestMapping("/singleConfig")
+    public BaseResponse<Map<String, Object>> singleConfig(@RequestBody NameSpaceRequest request){
+        return nameSpaceService.singleConfig(request);
     }
 
     @RequestMapping("/list")

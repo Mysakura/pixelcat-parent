@@ -1,17 +1,13 @@
 package com.pixelcat.core.config.bind;
 
-import com.pixelcat.core.config.PixelCatValue;
+import com.pixelcat.core.config.PixelCatPropertiesConstant;
+import com.pixelcat.core.zk.subject.BindConfigChangeListener;
+import com.pixelcat.core.zk.subject.ConfigSubject;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 public class PixelCatConfigurationPropertiesBinder {
     public static final String BEAN_NAME = "pixelCatConfigurationPropertiesBinder";
@@ -32,21 +28,11 @@ public class PixelCatConfigurationPropertiesBinder {
         Class<?> clazz = bean.getClass();
         pixelCatConfigClass.put(namespace, clazz);
 
-        ReflectionUtils.doWithFields(clazz, field -> {
-            PixelCatValue annotation = getAnnotation(field, PixelCatValue.class);
-            doWithAnnotation(beanName, bean, annotation, field.getModifiers(),
-                    null, field);
-        });
+        // 配置和namespace绑定
+        String projectId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.PROJECT_ID);
+        String envId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ENV_ID);
+        ConfigSubject subject = applicationContext.getBean(ConfigSubject.class);
+        subject.addConfigChangeListener(new BindConfigChangeListener(projectId, envId, namespace, bean, beanName));
     }
 
-    private void doWithAnnotation(String beanName, Object bean, PixelCatValue annotation,
-                                  int modifiers, Method method, Field field) {
-        if (annotation != null) {
-            if (Modifier.isStatic(modifiers)) {
-                return;
-            }
-            String placeholder = annotation.key();
-            // TODO
-        }
-    }
 }

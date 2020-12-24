@@ -1,10 +1,12 @@
 package com.pixelcat.core.zk.subject.event;
 
 
+import java.util.Map;
+
 public class ConfigDeleteEvent extends BaseConfigEvent {
 
-    public ConfigDeleteEvent(String path, String value) {
-        super(path, value);
+    public ConfigDeleteEvent(String projectId, String envId, String namespace, Map<String, Object> dataMap) {
+        super(projectId, envId, namespace, dataMap);
     }
 
     @Override

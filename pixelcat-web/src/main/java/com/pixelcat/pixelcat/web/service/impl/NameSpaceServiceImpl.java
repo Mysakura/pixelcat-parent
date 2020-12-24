@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -242,6 +239,34 @@ public class NameSpaceServiceImpl implements NameSpaceService {
                 result.add(dto);
             });
             response.setDataList(result);
+        }
+
+        return response;
+    }
+
+    @Override
+    public BaseResponse<Map<String, Object>> singleConfig(NameSpaceRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        BaseResponse<Map<String, Object>> response = new BaseResponse<>();
+
+        NameSpace record = new NameSpace();
+        record.setDeleteFlag(DeleteEnum.NO.getCode());
+        record.setType(NameSpaceEnum.NAME_SPACE.getCode());
+        record.setProjectId(request.getProjectId());
+        record.setEnvId(request.getEnvId());
+        record.setName(request.getName());
+        List<NameSpace> nameSpaceList = nameSpaceDAO.getNameSpaceList(record);
+        if (!CollectionUtils.isEmpty(nameSpaceList)){
+            NameSpaceConfig config = new NameSpaceConfig();
+            config.setDeleteFlag(DeleteEnum.NO.getCode());
+            config.setNamespaceId(nameSpaceList.get(0).getId());
+            List<NameSpaceConfig> configList = nameSpaceConfigDAO.getNameSpaceConfigList(config);
+            if (!CollectionUtils.isEmpty(configList)){
+                configList.forEach(c -> {
+                    result.put(c.getKey(), c.getValue());
+                });
+                response.setData(result);
+            }
         }
 
         return response;
