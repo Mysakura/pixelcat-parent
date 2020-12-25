@@ -1,17 +1,21 @@
 package com.pixelcat.pixelcat.web.service.impl;
 
+import com.pixelcat.core.zk.handle.ConfigHandler;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceConfigDTO;
 import com.pixelcat.pixelcat.web.base.enums.DeleteEnum;
+import com.pixelcat.pixelcat.web.base.enums.StatusEnum;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceConfigRequest;
 import com.pixelcat.pixelcat.web.dao.NameSpaceConfigDAO;
+import com.pixelcat.pixelcat.web.dao.NameSpaceDAO;
 import com.pixelcat.pixelcat.web.domain.NameSpace;
 import com.pixelcat.pixelcat.web.domain.NameSpaceConfig;
 import com.pixelcat.pixelcat.web.service.NameSpaceConfigService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +24,13 @@ import java.util.List;
 public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
 
     @Autowired
+    private NameSpaceDAO nameSpaceDAO;
+
+    @Autowired
     private NameSpaceConfigDAO nameSpaceConfigDAO;
+
+    @Autowired
+    private ConfigHandler configHandler;
 
     @Override
     public BasePageResponse<NameSpaceConfigDTO> getNameSpaceConfigList(NameSpaceConfigRequest request) {
@@ -46,6 +56,9 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
         NameSpaceConfig record = new NameSpaceConfig();
         BeanUtils.copyProperties(request, record);
         int i = nameSpaceConfigDAO.addNameSpaceConfig(record);
+        if (i > 0){
+            syncZookeeper(request.getNamespaceId(), StatusEnum.ADD);
+        }
         response.setData(i);
         return response;
     }
@@ -70,6 +83,9 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
         }
 
         int i = nameSpaceConfigDAO.batchAddNameSpaceConfig(list);
+        if (i > 0){
+            syncZookeeper(request.getNamespaceId(), StatusEnum.ADD);
+        }
         response.setData(i);
         return response;
     }
@@ -80,6 +96,9 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
         NameSpaceConfig record = new NameSpaceConfig();
         BeanUtils.copyProperties(request, record);
         int i = nameSpaceConfigDAO.updateNameSpaceConfig(record);
+        if (i > 0){
+            syncZookeeperById(request.getId(), StatusEnum.UPDATE);
+        }
         response.setData(i);
         return response;
     }
@@ -96,7 +115,42 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
             list.add(record);
         });
         int i = nameSpaceConfigDAO.batchUpdateNameSpaceConfig(list);
+        if (i > 0){
+            syncZookeeperById(request.getIds().get(0), StatusEnum.DELETE);
+        }
         response.setData(i);
         return response;
+    }
+
+    /**
+     * 新增，必须传入namespaceId
+     * @param namespaceId
+     */
+    private void syncZookeeper(Long namespaceId, StatusEnum status){
+        NameSpace record = new NameSpace();
+        record.setId(namespaceId);
+        List<NameSpace> list = nameSpaceDAO.getNameSpaceList(record);
+        if (!CollectionUtils.isEmpty(list)){
+            NameSpace nameSpace = list.get(0);
+            String path = "/" + nameSpace.getProjectId() + "/" + nameSpace.getEnvId() + "/" + nameSpace.getName();
+            if (configHandler.isExist(path)) {
+                configHandler.setPathValue(path, status.getName());
+            }else {
+                configHandler.createEphemeralPath(path, status.getName());
+            }
+        }
+    }
+
+    /**
+     * 修改删除，必须传入id
+     * @param id
+     */
+    private void syncZookeeperById(Long id, StatusEnum status){
+        NameSpaceConfig record = new NameSpaceConfig();
+        record.setId(id);
+        List<NameSpaceConfig> nameSpaceList = nameSpaceConfigDAO.getNameSpaceConfigList(record);
+        if (!CollectionUtils.isEmpty(nameSpaceList)){
+            syncZookeeper(nameSpaceList.get(0).getNamespaceId(), status);
+        }
     }
 }

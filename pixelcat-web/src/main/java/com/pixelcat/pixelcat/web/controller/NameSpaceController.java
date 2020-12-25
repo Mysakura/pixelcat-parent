@@ -6,7 +6,6 @@ import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
 import com.pixelcat.pixelcat.web.service.NameSpaceService;
-import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,16 +20,6 @@ public class NameSpaceController {
 
     @Autowired
     private NameSpaceService nameSpaceService;
-
-    /**
-     * 没啥用
-     * @param request
-     * @return
-     */
-    @RequestMapping("/initConfig")
-    public BasePageResponse<NameSpaceInit> initConfig(@RequestBody NameSpaceRequest request){
-        return nameSpaceService.initConfig(request);
-    }
 
     @RequestMapping("/singleConfig")
     public BaseResponse<Map<String, Object>> singleConfig(@RequestBody NameSpaceRequest request){

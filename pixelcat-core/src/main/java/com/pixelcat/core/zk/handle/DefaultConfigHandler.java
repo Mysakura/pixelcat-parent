@@ -103,6 +103,17 @@ public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAw
     }
 
     @Override
+    public boolean isExist(String path) {
+        try {
+            return zkServer.isExit(prePath(path));
+        } catch (Exception e) {
+            log.error("检测节点失败！", e);
+            throw new PixelCatException("检测节点失败！Cause：" + e.getMessage());
+        }
+
+    }
+
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }

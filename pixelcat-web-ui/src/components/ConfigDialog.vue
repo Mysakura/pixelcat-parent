@@ -377,6 +377,7 @@
                 this.configDeleteDialog = false
                 this.init(this.namespaceId);
                 this.$nextTick(() => {
+                    this.selected = []
                     this.editedItem = Object.assign({}, this.defaultConfig)
                     this.editedIndex = -1
                 })

@@ -20,4 +20,6 @@ public interface ConfigHandler {
     void setPathValue(String path, String value);
 
     String listPath();
+
+    boolean isExist(String path);
 }

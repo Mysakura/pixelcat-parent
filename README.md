@@ -20,6 +20,9 @@ https://www.jianshu.com/p/b9e93925a63a/
 
 程序应用读取云端分布式配置中心配置文件（和配置中心建立长连接）
 
+[一致性：JRaft](https://www.sofastack.tech/projects/sofa-jraft/jraft-user-guide/)
+
+
 client流程：
 1. 访问web端提供的http接口初始化配置
 2. 开启zk节点监听，根据节点变化，拉取最新配置

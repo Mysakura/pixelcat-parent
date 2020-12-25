@@ -4,7 +4,6 @@ import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
 import com.pixelcat.pixelcat.web.base.request.NameSpaceRequest;
-import com.pixelcat.spring.boot.autoconfigure.domain.NameSpaceInit;
 
 import java.util.Map;
 
@@ -33,8 +32,6 @@ public interface NameSpaceService {
     BaseResponse<Integer> updateNameSpace(NameSpaceRequest request);
 
     BaseResponse<Integer> deleteNameSpace(NameSpaceRequest request);
-
-    BasePageResponse<NameSpaceInit> initConfig(NameSpaceRequest request);
 
     BaseResponse<Map<String, Object>> singleConfig(NameSpaceRequest request);
 

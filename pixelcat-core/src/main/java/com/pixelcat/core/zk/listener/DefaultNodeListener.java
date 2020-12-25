@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -159,17 +160,17 @@ public class DefaultNodeListener extends AbstractNodeListener implements Applica
             OkHttpUtil.getInstance().post(centerUrl + "/namespace/singleConfig", bodyJson, json -> {
                 log.info("获取配置：{}", json);
                 JSONObject jsonObject = JSON.parseObject(json);
-                String dataList = jsonObject.getString("data");
-                Map<String, Object> dataMap = JSON.parseObject(dataList);
-
-                if (!CollectionUtils.isEmpty(dataMap)) {
-                    // 3. 发布事件
-                    ConfigCreateEvent event = new ConfigCreateEvent(parsedPath.projectId, parsedPath.envId, parsedPath.namespace, dataMap);
-                    if (applicationContext.isRunning()){
-                        configSubject.publishEvent(event);
-                    }else{
-                        deferredEvents.add(event);
-                    }
+                String dataStr = jsonObject.getString("data");
+                Map<String, Object> dataMap = JSON.parseObject(dataStr);
+                if (dataMap == null) {
+                    dataMap = new HashMap<>();
+                }
+                // 3. 发布事件
+                ConfigCreateEvent event = new ConfigCreateEvent(parsedPath.projectId, parsedPath.envId, parsedPath.namespace, dataMap);
+                if (applicationContext.isRunning()){
+                    configSubject.publishEvent(event);
+                }else{
+                    deferredEvents.add(event);
                 }
             });
         }
