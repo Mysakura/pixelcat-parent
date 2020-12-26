@@ -1,10 +1,10 @@
-package com.pixelcat.core.zk;
+package com.pixelcat.core.zk.listener;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 
-public abstract class AbstractNodeListener implements TreeCacheListener {
+public abstract class AbstractZkNodeHandler implements TreeCacheListener {
 
     @Override
     public void childEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) throws Exception {

@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.http.OkHttpUtil;
-import com.pixelcat.core.zk.AbstractNodeListener;
 import com.pixelcat.core.zk.handle.ConfigHandler;
 import com.pixelcat.core.zk.handle.DefaultConfigHandler;
 import com.pixelcat.core.zk.subject.ConfigChangeListener;
@@ -22,7 +21,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -35,8 +33,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * ZK节点监听，事件由configSubject来传播，接收者为 {@link ConfigChangeListener}
  */
 @Slf4j
-public class DefaultNodeListener extends AbstractNodeListener implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
-    public static final String BEAN_NAME = "defaultNodeListener";
+public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+    public static final String BEAN_NAME = "defaultZkNodeHandler";
 
     private ConfigSubject configSubject;
 
@@ -48,7 +46,7 @@ public class DefaultNodeListener extends AbstractNodeListener implements Applica
     private String projectId;
     private String envId;
 
-    public DefaultNodeListener() {
+    public DefaultZkNodeHandler() {
     }
 
     @PostConstruct
@@ -118,8 +116,6 @@ public class DefaultNodeListener extends AbstractNodeListener implements Applica
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-
-
         // 1. 初始化客户端监听
         Collection<ConfigChangeListener> values = applicationContext.getBeansOfType(ConfigChangeListener.class).values();
         // 添加到subject

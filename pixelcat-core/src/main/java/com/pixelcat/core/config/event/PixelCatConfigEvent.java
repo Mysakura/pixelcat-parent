@@ -3,6 +3,10 @@ package com.pixelcat.core.config.event;
 import com.pixelcat.core.zk.handle.ConfigHandler;
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * 不利用ApplicationListener来传播事件了
+ */
+@Deprecated
 public class PixelCatConfigEvent extends ApplicationEvent {
 
     private final String projectId;

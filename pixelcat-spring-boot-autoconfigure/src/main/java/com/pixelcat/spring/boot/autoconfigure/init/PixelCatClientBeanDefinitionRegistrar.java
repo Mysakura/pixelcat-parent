@@ -4,7 +4,7 @@ import com.pixelcat.core.config.bind.PixelCatConfigurationPropertiesBinder;
 import com.pixelcat.core.config.processor.PixelCatConfigAnnotationBindingPostProcessor;
 import com.pixelcat.core.zk.ZkServer;
 import com.pixelcat.core.zk.handle.DefaultConfigHandler;
-import com.pixelcat.core.zk.listener.DefaultNodeListener;
+import com.pixelcat.core.zk.listener.DefaultZkNodeHandler;
 import com.pixelcat.core.zk.subject.DefaultConfigSubject;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -24,6 +24,6 @@ public class PixelCatClientBeanDefinitionRegistrar implements ImportBeanDefiniti
         registerBeanDefinition(ZkServer.BEAN_NAME, ZkServer.class, registry);
         registerBeanDefinition(DefaultConfigHandler.BEAN_NAME, DefaultConfigHandler.class, registry);
         registerBeanDefinition(DefaultConfigSubject.BEAN_NAME, DefaultConfigSubject.class, registry);
-        registerBeanDefinition(DefaultNodeListener.BEAN_NAME, DefaultNodeListener.class, registry);
+        registerBeanDefinition(DefaultZkNodeHandler.BEAN_NAME, DefaultZkNodeHandler.class, registry);
     }
 }
