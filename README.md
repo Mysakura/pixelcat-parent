@@ -6,22 +6,42 @@ client：用户监听配置变化，自定义一些额外操作
 
 高可用：管理台高可用
 1. 利用zk，创建临时顺序节点
-2. Apache Ratis
-3. spring-integration
+2. [Apache Ratis](https://ratis.incubator.apache.org/#gettingstarted)
+3. [spring-integration](https://docs.spring.io/spring-integration/docs/current/reference/html/)
+4. [一致性：JRaft](https://www.sofastack.tech/projects/sofa-jraft/jraft-user-guide/)
 
+```xml
 <dependency>
     <groupId>org.springframework.integration</groupId>
     <artifactId>spring-integration-zookeeper</artifactId>
     <version>5.3.3.RELEASE</version>
 </dependency>
+```
+基于zookeeper实现高可用:
+- https://blog.csdn.net/weixin_43838174/article/details/106839669
+- https://www.jianshu.com/p/b9e93925a63a/
+- https://blog.csdn.net/weixin_43704599/article/details/107884983
 
-https://blog.csdn.net/weixin_43838174/article/details/106839669
-https://www.jianshu.com/p/b9e93925a63a/
+Nacos和Apollo配置推送都是基于HTTP长轮询，客户端和配置中心建立HTTP长连接，当配置变更的的时候，配置中心把配置推送到客户端。
 
-程序应用读取云端分布式配置中心配置文件（和配置中心建立长连接）
+###[zookeeper应用](https://zhuanlan.zhihu.com/p/59669985) [zookeeper应用](https://www.cnblogs.com/ynyhl/p/9981887.html)
+0. 通知机制：https://www.cnblogs.com/wuzhenzhao/p/9994450.html
+1. 命名服务（生成顺序节点，分布式ID）
+2. 配置管理（数据发布/订阅）
+3. 集群管理（创建顺序临时节点）
+4. 分布式锁（创建临时节点）
+5. 队列
+6. 心跳检测（被检测的客户端创建临时节点）
+7. Master 选举（集群机器都尝试创建节点，创建成功的客户端机器就会成为 Master，失败的客户端机器就在该节点上注册一个 Watcher 用于监控当前 Master 机器是否存活，一旦发现 Master 挂了，其余客户端就可以进行选举了。）
 
-[一致性：JRaft](https://www.sofastack.tech/projects/sofa-jraft/jraft-user-guide/)
+管理台高可用流程
+1. 所有管理台，启动的时候，向zk注册一个临时节点。成功创建节点的为Master。
+2. 所有管理台，监听master节点变化。
+3. Master挂掉，临时节点删除，其余节点重新选举。
 
+Client请求管理台集群，怎样得知当前提供服务的是哪一个？
+1. 过滤器，从zk获取当前master是哪一个，然后把请求转给master(这种思路是对的)
+2. [zookeeper一致性知识点](https://www.cnblogs.com/aspirant/p/9179045.html)
 
 client流程：
 1. 访问web端提供的http接口初始化配置
@@ -45,8 +65,9 @@ web流程：
 3. 书写配置类，指明namespace，获取kv
 
 
-- Binder
+- [Binder](https://www.cnblogs.com/lyldelove/p/13431115.html)
 - 动态注册Bean
+- environment.resolvePlaceholders(name)
 
 由于初始化和监听的逻辑不同，两个starter
 

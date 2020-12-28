@@ -23,9 +23,9 @@ public class NameSpace {
     private Long envId;
 
     @DbColumn("type")
-    private int type;
+    private Integer type;
 
     @DbColumn("delete_flag")
-    private int deleteFlag;
+    private Integer deleteFlag;
 
 }

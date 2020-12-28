@@ -55,7 +55,10 @@ public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEve
      */
     private List<NameSpace> readFromDb(){
         Executor executor = executorFactory.newExecutor();
-        List<NameSpace> list = executor.getList(NameSpace.class, "select * from namespace where type = 3", null);
+        NameSpace record = new NameSpace();
+        record.setType(3);
+        record.setDeleteFlag(1);
+        List<NameSpace> list = executor.getList(NameSpace.class, record);
         executor.close();
         return list;
     }

@@ -31,4 +31,28 @@ public abstract class BaseConfigEvent implements ConfigEvent {
     public Map<String, Object> dataMap() {
         return dataMap;
     }
+
+    @Override
+    public String toString() {
+        return "BaseConfigEvent{" +
+                "projectId='" + projectId + '\'' +
+                ", envId='" + envId + '\'' +
+                ", namespace='" + namespace + '\'' +
+                ", dataMap=" + parseMap(dataMap) +
+                '}';
+    }
+
+    private String parseMap(Map<String, Object> dataMap){
+        if (dataMap != null && dataMap.size() > 0){
+            StringBuilder sb = new StringBuilder();
+            dataMap.forEach((k,v) -> {
+                sb.append(k);
+                sb.append("=");
+                sb.append(v);
+                sb.append(",");
+            });
+            return sb.toString().substring(0, sb.lastIndexOf(","));
+        }
+        return null;
+    }
 }

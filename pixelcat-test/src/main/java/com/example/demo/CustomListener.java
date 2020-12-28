@@ -13,7 +13,7 @@ public class CustomListener implements ConfigChangeListener {
     public void action(BaseConfigEvent event) {
         System.out.println("==============");
         System.out.println(event.getEventType().getEventType());
-        System.out.println(event);
+        System.out.println(event.toString());
         System.out.println("==============");
     }
 }
