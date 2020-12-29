@@ -48,6 +48,7 @@ public interface PixelCatPropertiesConstant {
     /**
      * 配置中心地址
      */
+    @Deprecated
     String CENTER_URL = "centerUrl";
 
     /**

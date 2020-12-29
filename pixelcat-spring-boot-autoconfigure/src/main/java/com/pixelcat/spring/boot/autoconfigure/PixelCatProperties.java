@@ -18,17 +18,17 @@ public class PixelCatProperties {
     /**
      * 地址
      */
-    private String url = "jdbc:mysql://10.20.26.47:3306/lcptpub?characterEncoding=utf8";
+    private String url = "";
 
     /**
      * 用户名
      */
-    private String username = "root";
+    private String username = "";
 
     /**
      * 密码
      */
-    private String password = "handsome";
+    private String password = "";
 
     /**
      * zk地址
@@ -54,6 +54,7 @@ public class PixelCatProperties {
     /**
      * 配置中心地址
      */
+    @Deprecated
     private String centerUrl = "http://127.0.0.1:8888";
 
     /**

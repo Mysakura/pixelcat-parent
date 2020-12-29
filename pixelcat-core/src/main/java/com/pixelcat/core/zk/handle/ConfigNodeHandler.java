@@ -22,4 +22,6 @@ public interface ConfigNodeHandler {
     String listPath();
 
     boolean isExist(String path);
+
+    boolean isClose();
 }

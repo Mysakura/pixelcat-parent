@@ -4,6 +4,7 @@ import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
@@ -235,6 +236,10 @@ public class ZkServer implements EnvironmentAware {
      */
     public void close(){
         client.close();
+    }
+
+    public boolean isClose(){
+        return client.getState().name().equals(CuratorFrameworkState.STOPPED.name());
     }
 
     @Override

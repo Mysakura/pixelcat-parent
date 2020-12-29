@@ -114,6 +114,11 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
     }
 
     @Override
+    public boolean isClose() {
+        return zkServer.isClose();
+    }
+
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
