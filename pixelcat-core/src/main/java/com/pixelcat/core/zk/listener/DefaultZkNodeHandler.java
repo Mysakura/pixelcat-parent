@@ -104,13 +104,15 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     }
 
     /**
-     * 这里应该有问题，要考虑无namespace的path
+     * 要考虑无namespace的path
+     * 情况1. /pixelcat/7/19
+     * 情况2. /pixelcat/7/19/zk.properties
      * @param path
      * @return
      */
     private ParsedPath parsePath(String path){
         String[] split = path.split("/");
-        return new ParsedPath(split[2], split[3], split[4]);
+        return new ParsedPath(split[2], split[3], split.length > 4 ? split[4] : null);
     }
 
     /**
@@ -152,7 +154,7 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     private void doPublish(String path){
         // 1. 解析path
         ParsedPath parsedPath = parsePath(path);
-        if (parsedPath.projectId.equals(projectId) && parsedPath.envId.equals(envId) ) {
+        if (parsedPath.projectId.equals(projectId) && parsedPath.envId.equals(envId) && parsedPath.namespace != null) {
 
             // 2. 请求http，获取配置
             String bodyJson = String.format("{\"projectId\": \"%s\", \"envId\": \"%s\", \"name\": \"%s\"}", projectId, envId, parsedPath.namespace);
@@ -175,6 +177,11 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
         }
     }
 
+    /**
+     * Master挂掉，这里获取不到对应节点的值
+     * NoNode for /pixelcat/master_of_center
+     * @return
+     */
     private String centerUrl(){
         return configNodeHandler.getPathValue(ElectionMaster.MASTER_PATH);
     }
