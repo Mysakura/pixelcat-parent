@@ -50,7 +50,7 @@ public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEve
     }
 
     /**
-     * 读取数据库这部分可以由子类实现，在web项目中
+     * 读取数据库
      * @return
      */
     private List<NameSpace> readFromDb(){
@@ -72,7 +72,7 @@ public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEve
                 configHandler.createEphemeralPath(node, "INIT");
             });
             // 打印节点
-            log.info("配置节点：\n*******************************\n{}\n*******************************", configHandler.listPath());
+            log.info("初始化配置节点：\n*******************************\n{}\n*******************************", configHandler.listPath());
         }
     }
 }
