@@ -3,6 +3,7 @@ package com.pixelcat.core.zk.listener;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.pixelcat.core.config.PixelCatPropertiesConstant;
+import com.pixelcat.core.election.ElectionMaster;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.http.OkHttpUtil;
 import com.pixelcat.core.zk.handle.ConfigNodeHandler;
@@ -38,6 +39,8 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
     private ConfigSubject configSubject;
 
+    private ConfigNodeHandler configNodeHandler;
+
     private ConfigurableApplicationContext applicationContext;
 
     private final ConcurrentLinkedQueue<BaseConfigEvent> deferredEvents = new ConcurrentLinkedQueue<>();
@@ -52,13 +55,13 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     @PostConstruct
     public void init(){
         this.configSubject = applicationContext.getBean(DefaultConfigSubject.BEAN_NAME, ConfigSubject.class);
+        this.configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
         this.centerUrl = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.CENTER_URL);
         this.projectId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.PROJECT_ID);
         this.envId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ENV_ID);
 
         // zk监听
         try {
-            ConfigNodeHandler configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
             configNodeHandler.addWatcher(this, "/" + projectId + "/" + envId);
         } catch (Exception e) {
             throw new PixelCatException("初始化zk节点监听失败！" + e.getMessage(), e);
@@ -153,7 +156,7 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
             // 2. 请求http，获取配置
             String bodyJson = String.format("{\"projectId\": \"%s\", \"envId\": \"%s\", \"name\": \"%s\"}", projectId, envId, parsedPath.namespace);
-            OkHttpUtil.getInstance().post(centerUrl + "/namespace/singleConfig", bodyJson, json -> {
+            OkHttpUtil.getInstance().post(/*centerUrl*/centerUrl() + "/namespace/singleConfig", bodyJson, json -> {
                 log.info("获取配置：{}", json);
                 JSONObject jsonObject = JSON.parseObject(json);
                 String dataStr = jsonObject.getString("data");
@@ -171,4 +174,9 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
             });
         }
     }
+
+    private String centerUrl(){
+        return configNodeHandler.getPathValue(ElectionMaster.MASTER_PATH);
+    }
+
 }
