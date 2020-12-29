@@ -1,6 +1,6 @@
 package com.pixelcat.pixelcat.web.service.impl;
 
-import com.pixelcat.core.zk.handle.ConfigHandler;
+import com.pixelcat.core.zk.handle.ConfigNodeHandler;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceConfigDTO;
@@ -30,7 +30,7 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
     private NameSpaceConfigDAO nameSpaceConfigDAO;
 
     @Autowired
-    private ConfigHandler configHandler;
+    private ConfigNodeHandler configNodeHandler;
 
     @Override
     public BasePageResponse<NameSpaceConfigDTO> getNameSpaceConfigList(NameSpaceConfigRequest request) {
@@ -133,10 +133,10 @@ public class NameSpaceConfigServiceImpl implements NameSpaceConfigService {
         if (!CollectionUtils.isEmpty(list)){
             NameSpace nameSpace = list.get(0);
             String path = "/" + nameSpace.getProjectId() + "/" + nameSpace.getEnvId() + "/" + nameSpace.getName();
-            if (configHandler.isExist(path)) {
-                configHandler.setPathValue(path, status.getName());
+            if (configNodeHandler.isExist(path)) {
+                configNodeHandler.setPathValue(path, status.getName());
             }else {
-                configHandler.createEphemeralPath(path, status.getName());
+                configNodeHandler.createEphemeralPath(path, status.getName());
             }
         }
     }

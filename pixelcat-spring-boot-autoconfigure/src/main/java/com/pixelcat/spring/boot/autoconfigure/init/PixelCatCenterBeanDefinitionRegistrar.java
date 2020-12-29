@@ -3,7 +3,7 @@ package com.pixelcat.spring.boot.autoconfigure.init;
 import com.pixelcat.core.config.bind.PixelCatConfigurationPropertiesBinder;
 import com.pixelcat.core.db.DefaultExecutorFactory;
 import com.pixelcat.core.zk.ZkServer;
-import com.pixelcat.core.zk.handle.DefaultConfigHandler;
+import com.pixelcat.core.zk.handle.DefaultConfigNodeHandler;
 import com.pixelcat.core.zk.subject.DefaultConfigSubject;
 import com.pixelcat.core.zk.listener.DefaultZkNodeHandler;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -24,7 +24,7 @@ public class PixelCatCenterBeanDefinitionRegistrar implements ImportBeanDefiniti
 
         registerBeanDefinition(ConfigCenterInit.BEAN_NAME, ConfigCenterInit.class, registry);
         registerBeanDefinition(ZkServer.BEAN_NAME, ZkServer.class, registry);
-        registerBeanDefinition(DefaultConfigHandler.BEAN_NAME, DefaultConfigHandler.class, registry);
+        registerBeanDefinition(DefaultConfigNodeHandler.BEAN_NAME, DefaultConfigNodeHandler.class, registry);
         registerBeanDefinition(DefaultConfigSubject.BEAN_NAME, DefaultConfigSubject.class, registry);
         registerBeanDefinition(DefaultZkNodeHandler.BEAN_NAME, DefaultZkNodeHandler.class, registry);
         registerBeanDefinition(DefaultExecutorFactory.BEAN_NAME, DefaultExecutorFactory.class, registry);

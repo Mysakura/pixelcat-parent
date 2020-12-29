@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.pixelcat.core.zk.handle.ConfigHandler;
+import com.pixelcat.core.zk.handle.ConfigNodeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +15,7 @@ public class DemoController {
     private DubboProperties dubboProperties;
 
     @Autowired
-    private ConfigHandler configHandler;
+    private ConfigNodeHandler configNodeHandler;
 
     @RequestMapping("/get")
     public String get(){
@@ -29,6 +29,6 @@ public class DemoController {
 
     @RequestMapping("/list")
     public String list(){
-        return configHandler.listPath();
+        return configNodeHandler.listPath();
     }
 }

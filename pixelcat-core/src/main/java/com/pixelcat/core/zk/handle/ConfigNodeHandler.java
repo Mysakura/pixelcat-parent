@@ -5,7 +5,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 /**
  * 操作配置
  */
-public interface ConfigHandler {
+public interface ConfigNodeHandler {
 
     void addWatcher(TreeCacheListener listener) throws Exception;
 

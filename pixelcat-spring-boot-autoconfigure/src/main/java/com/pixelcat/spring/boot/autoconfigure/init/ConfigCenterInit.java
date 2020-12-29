@@ -3,8 +3,8 @@ package com.pixelcat.spring.boot.autoconfigure.init;
 import com.pixelcat.core.db.DefaultExecutorFactory;
 import com.pixelcat.core.db.executor.Executor;
 import com.pixelcat.core.db.executor.ExecutorFactory;
-import com.pixelcat.core.zk.handle.ConfigHandler;
-import com.pixelcat.core.zk.handle.DefaultConfigHandler;
+import com.pixelcat.core.zk.handle.ConfigNodeHandler;
+import com.pixelcat.core.zk.handle.DefaultConfigNodeHandler;
 import com.pixelcat.spring.boot.autoconfigure.domain.NameSpace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -24,7 +24,7 @@ import java.util.List;
 public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
     public static final String BEAN_NAME = "configCenterInit";
     private ApplicationContext applicationContext;
-    private ConfigHandler configHandler;
+    private ConfigNodeHandler configNodeHandler;
     private ExecutorFactory executorFactory;
 
     public ConfigCenterInit() {
@@ -32,7 +32,7 @@ public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEve
 
     @PostConstruct
     public void init(){
-        this.configHandler = applicationContext.getBean(DefaultConfigHandler.BEAN_NAME, ConfigHandler.class);
+        this.configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
         this.executorFactory = applicationContext.getBean(DefaultExecutorFactory.BEAN_NAME, ExecutorFactory.class);
     }
 
@@ -69,10 +69,10 @@ public class ConfigCenterInit implements ApplicationListener<ContextRefreshedEve
         }else {
             nameSpaces.forEach(e -> {
                 String node = e.getProjectId() + "/" + e.getEnvId() + "/" + e.getName();
-                configHandler.createEphemeralPath(node, "INIT");
+                configNodeHandler.createEphemeralPath(node, "INIT");
             });
             // 打印节点
-            log.info("初始化配置节点：\n*******************************\n{}\n*******************************", configHandler.listPath());
+            log.info("初始化配置节点：\n*******************************\n{}\n*******************************", configNodeHandler.listPath());
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.pixelcat.core.config.event;
 
-import com.pixelcat.core.zk.handle.ConfigHandler;
+import com.pixelcat.core.zk.handle.ConfigNodeHandler;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -13,7 +13,7 @@ public class PixelCatConfigEvent extends ApplicationEvent {
     private final String envId;
     private final String namespaceId;
 
-    public PixelCatConfigEvent(ConfigHandler source, String projectId, String envId, String namespaceId) {
+    public PixelCatConfigEvent(ConfigNodeHandler source, String projectId, String envId, String namespaceId) {
         super(source);
         this.projectId = projectId;
         this.envId = envId;
@@ -21,8 +21,8 @@ public class PixelCatConfigEvent extends ApplicationEvent {
     }
 
     @Override
-    public ConfigHandler getSource() {
-        return (ConfigHandler) super.getSource();
+    public ConfigNodeHandler getSource() {
+        return (ConfigNodeHandler) super.getSource();
     }
 
     public String getProjectId() {

@@ -14,14 +14,14 @@ import org.springframework.util.StringUtils;
 import javax.annotation.PostConstruct;
 
 @Slf4j
-public class DefaultConfigHandler implements ConfigHandler, ApplicationContextAware, DisposableBean {
+public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationContextAware, DisposableBean {
     public static final String BEAN_NAME = "defaultConfigHandler";
 
     private ZkServer zkServer;
     private String rootPath;
     private ApplicationContext applicationContext;
 
-    public DefaultConfigHandler() {
+    public DefaultConfigNodeHandler() {
 
     }
 

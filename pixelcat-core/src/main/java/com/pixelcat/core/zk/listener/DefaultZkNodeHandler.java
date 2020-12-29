@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.pixelcat.core.config.PixelCatPropertiesConstant;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.http.OkHttpUtil;
-import com.pixelcat.core.zk.handle.ConfigHandler;
-import com.pixelcat.core.zk.handle.DefaultConfigHandler;
+import com.pixelcat.core.zk.handle.ConfigNodeHandler;
+import com.pixelcat.core.zk.handle.DefaultConfigNodeHandler;
 import com.pixelcat.core.zk.subject.ConfigChangeListener;
 import com.pixelcat.core.zk.subject.ConfigSubject;
 import com.pixelcat.core.zk.subject.DefaultConfigSubject;
@@ -58,8 +58,8 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
         // zk监听
         try {
-            ConfigHandler configHandler = applicationContext.getBean(DefaultConfigHandler.BEAN_NAME, ConfigHandler.class);
-            configHandler.addWatcher(this, "/" + projectId + "/" + envId);
+            ConfigNodeHandler configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
+            configNodeHandler.addWatcher(this, "/" + projectId + "/" + envId);
         } catch (Exception e) {
             throw new PixelCatException("初始化zk节点监听失败！" + e.getMessage(), e);
         }
