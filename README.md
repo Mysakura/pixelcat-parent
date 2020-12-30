@@ -1,8 +1,12 @@
-自动配置：zk + db
+###工程结构
+- pixelcat-web 管理台
+- pixelcat-web-ui 管理台前端
+- pixelcat-test 标准客户端使用
 
-core：zk操作 + db操作(web端与配置无关的db操作放在web里)
-
-client：用户监听配置变化，自定义一些额外操作
+###功能
+1. 配置实时更新，粒度到namespace
+2. 管理台高可用集群
+3. 客户端自定义配置变化监听
 
 高可用：管理台高可用
 1. 利用zk，创建临时顺序节点
@@ -17,9 +21,6 @@ client：用户监听配置变化，自定义一些额外操作
     <version>5.3.3.RELEASE</version>
 </dependency>
 ```
-基于zookeeper实现高可用:
-- https://blog.csdn.net/weixin_43838174/article/details/106839669
-- https://blog.csdn.net/weixin_43704599/article/details/107884983
 
 Nacos和Apollo配置推送都是基于HTTP长轮询，客户端和配置中心建立HTTP长连接，当配置变更的的时候，配置中心把配置推送到客户端。
 
@@ -33,51 +34,38 @@ Nacos和Apollo配置推送都是基于HTTP长轮询，客户端和配置中心�
 6. 心跳检测（被检测的客户端创建临时节点）
 7. Master 选举（集群机器都尝试创建节点，创建成功的客户端机器就会成为 Master，失败的客户端机器就在该节点上注册一个 Watcher 用于监控当前 Master 机器是否存活，一旦发现 Master 挂了，其余客户端就可以进行选举了。）
 
-管理台高可用流程
+高可用流程
 1. 所有管理台，启动的时候，向zk注册一个临时节点。成功创建节点的为Master。
 2. 所有管理台，监听master节点变化。
 3. Master挂掉，临时节点删除，其余节点重新选举。
 
-Client请求管理台集群，怎样得知当前提供服务的是哪一个？
+客户端请求管理台集群，怎样得知当前提供服务的是哪一个？
 1. 过滤器，从zk获取当前master是哪一个，然后把请求转给master(这种思路是对的)
 2. [zookeeper一致性知识点](https://www.cnblogs.com/aspirant/p/9179045.html)
 
-client流程：
-1. 访问web端提供的http接口初始化配置
-2. 开启zk节点监听，根据节点变化，拉取最新配置
-4. 用户可扩展：监听配置变化(涉及到的path + 具体的配置)，是否可以用户自定义覆盖默认的逻辑？
+用户访问管理台前端？
+- 访问任意一个节点都可
 
-更新配置流程：
-1. zk监听到，从web拿到新配置
-2. 根据namespace全路径，定位Spring容器里的那个配置类
-3. 利用反射修改成员变量
+client更新配置流程：
+1. 监听zk节点变化事件，发生事件后解析出 项目-环境-namespace 结构，向管理台发出http请求相应的数据，封装成ConfigEvent，利用ConfigSubject传播给对应的收听者。
+2. BeanPostProcessor过滤标记@PixelCatConfig注解的配置类，解析 项目-环境-namespace，将bean和namespace事件绑定在一起
+3. 当接受到ConfigSubject传播的事件后，读取bean的属性，利用反射从属性的注解解析出key，从事件中利用key获取对应的value，赋值给属性
 
-web流程：
-1. 读取数据库初始化zk节点
+管理台流程：
+1. 选举成功的，读取数据库初始化zk节点
 2. 提供正常的增删查改操作，并修改相应的zk节点
-3. 本地缓存？如果加了本地缓存，修改了配置之后也要更新本地缓存
-4. 给client提供查询接口以便更新配置
+3. 给client提供查询接口以便更新配置
+4. Master挂掉，其它节点监听到，自己尝试创建Master节点。成功后，初始化配置节点，继续提供服务
 
 客户端配置
 1. 配置项目ID
-2. 配置环境
+2. 配置环境ID
 3. 书写配置类，指明namespace，获取kv
 
 
 - [Binder](https://www.cnblogs.com/lyldelove/p/13431115.html)
 - 动态注册Bean
 - environment.resolvePlaceholders(name)
-
-由于初始化和监听的逻辑不同，两个starter
-
-starter：给客户端用
-
-starter和web后台都依赖core
-
-starter->autoconfig->client->core
-
-
-数据库：连接池
 
 
 com.mysql.cj.jdbc.Driver
