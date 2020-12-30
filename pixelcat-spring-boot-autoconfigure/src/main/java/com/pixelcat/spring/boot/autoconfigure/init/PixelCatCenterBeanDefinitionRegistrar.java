@@ -1,6 +1,5 @@
 package com.pixelcat.spring.boot.autoconfigure.init;
 
-import com.pixelcat.core.config.bind.PixelCatConfigurationPropertiesBinder;
 import com.pixelcat.core.db.DefaultExecutorFactory;
 import com.pixelcat.core.election.ElectionMaster;
 import com.pixelcat.core.zk.ZkServer;
@@ -20,9 +19,6 @@ public class PixelCatCenterBeanDefinitionRegistrar implements ImportBeanDefiniti
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        // 属性绑定
-        registerBeanDefinition(PixelCatConfigurationPropertiesBinder.BEAN_NAME, PixelCatConfigurationPropertiesBinder.class, registry);
-
         registerBeanDefinition(ElectionMaster.BEAN_NAME, ElectionMaster.class, registry);
         registerBeanDefinition(ZkServer.BEAN_NAME, ZkServer.class, registry);
         registerBeanDefinition(DefaultConfigNodeHandler.BEAN_NAME, DefaultConfigNodeHandler.class, registry);

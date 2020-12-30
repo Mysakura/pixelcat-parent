@@ -23,6 +23,8 @@ import java.util.List;
 /**
  * 集群选举
  * 客户端可以不指定配置中心URL，因为这个信息会存储在node节点。好处在于用户不需要知道谁是Master，但是选举可能出现的情况要考虑周全
+ * 1. 选举成功的作为Master，Master对外提供服务
+ * 2. 比如三个管理台ABC，任何一个都可以对外提供前台页面的操作。但是对于客户端的请求，只有Master来处理。
  */
 @Slf4j
 public class ElectionMaster extends AbstractZkNodeHandler implements ApplicationContextAware {
@@ -91,7 +93,14 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
                 }
             }
             // 尝试把自己的地址写入path，这个地址作为客户端请求的配置中心地址
-            configNodeHandler.createEphemeralPath(MASTER_PATH, value);
+            if (!configNodeHandler.isExist(MASTER_PATH)) {
+                configNodeHandler.createEphemeralPath(MASTER_PATH, value);
+                log.info("节点【{}】竞选成功！", value);
+                return true;
+            } else {
+                log.info("Path【{}】已存在！节点【{}】竞选失败！", MASTER_PATH, value);
+                return false;
+            }
         } catch (UnknownHostException e) {
             log.error("竞选前期出现错误！", e);
             return false;
@@ -99,8 +108,6 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
             log.info("节点【{}】竞选失败！", value);
             return false;
         }
-        log.info("节点【{}】竞选成功！", value);
-        return true;
     }
 
     /**

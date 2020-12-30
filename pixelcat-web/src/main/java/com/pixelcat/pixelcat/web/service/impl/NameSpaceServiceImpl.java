@@ -1,5 +1,6 @@
 package com.pixelcat.pixelcat.web.service.impl;
 
+import com.pixelcat.core.config.bind.PixelCatConfigurationPropertiesBinder;
 import com.pixelcat.pixelcat.web.base.BasePageResponse;
 import com.pixelcat.pixelcat.web.base.BaseResponse;
 import com.pixelcat.pixelcat.web.base.dto.NameSpaceDTO;
@@ -22,6 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * 删除一个namespace/env/project，要同步zk。客户端监听：
+ * 1. 删除namespace，{@link PixelCatConfigurationPropertiesBinder} 中添加的监听不要删除，万一人家后来又加上了呢。以客户端配置为主，管理台删除namespace，客户端对应的namespace配置不动。
+ * 2. 删除env，env下的namespace涉及的监听要不要删除？不要
+ * 3. 删除project，project下的env下的namespace涉及的监听要不要删除？不要
+ */
 @Service
 public class NameSpaceServiceImpl implements NameSpaceService {
 

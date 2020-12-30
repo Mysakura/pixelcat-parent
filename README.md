@@ -19,7 +19,6 @@ client：用户监听配置变化，自定义一些额外操作
 ```
 基于zookeeper实现高可用:
 - https://blog.csdn.net/weixin_43838174/article/details/106839669
-- https://www.jianshu.com/p/b9e93925a63a/
 - https://blog.csdn.net/weixin_43704599/article/details/107884983
 
 Nacos和Apollo配置推送都是基于HTTP长轮询，客户端和配置中心建立HTTP长连接，当配置变更的的时候，配置中心把配置推送到客户端。
