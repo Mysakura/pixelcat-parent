@@ -51,6 +51,10 @@ client更新配置流程：
 2. BeanPostProcessor过滤标记@PixelCatConfig注解的配置类，解析 项目-环境-namespace，将bean和namespace事件绑定在一起
 3. 当接受到ConfigSubject传播的事件后，读取bean的属性，利用反射从属性的注解解析出key，从事件中利用key获取对应的value，赋值给属性
 
+com.pixelcat.core.zk.listener.DefaultZkNodeHandler -> com.pixelcat.core.zk.subject.ConfigSubject -> com.pixelcat.core.zk.subject.BindConfigChangeListener
+
+com.pixelcat.core.config.processor.PixelCatConfigAnnotationBindingPostProcessor -> com.pixelcat.core.config.bind.PixelCatConfigurationPropertiesBinder -> com.pixelcat.core.zk.subject.BindConfigChangeListener
+
 管理台流程：
 1. 选举成功的，读取数据库初始化zk节点
 2. 提供正常的增删查改操作，并修改相应的zk节点
