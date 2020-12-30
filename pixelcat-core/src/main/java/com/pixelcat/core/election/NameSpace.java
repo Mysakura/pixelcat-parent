@@ -1,4 +1,4 @@
-package com.pixelcat.spring.boot.autoconfigure.domain;
+package com.pixelcat.core.election;
 
 import com.pixelcat.core.db.parse.DbColumn;
 import com.pixelcat.core.db.parse.DbId;

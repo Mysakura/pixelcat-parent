@@ -7,9 +7,11 @@ import org.apache.curator.framework.recipes.cache.TreeCacheListener;
  */
 public interface ConfigNodeHandler {
 
-    void addWatcher(TreeCacheListener listener) throws Exception;
+    void addTreeWatcher(TreeCacheListener listener) throws Exception;
 
-    void addWatcher(TreeCacheListener listener, String path) throws Exception;
+    void addTreeWatcher(TreeCacheListener listener, String path) throws Exception;
+
+    void removeTreeWatcher(String path);
 
     void createEphemeralPath(String path, String value);
 

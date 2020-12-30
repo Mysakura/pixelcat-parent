@@ -1,5 +1,8 @@
 package com.pixelcat.core.election;
 
+import com.pixelcat.core.db.DefaultExecutorFactory;
+import com.pixelcat.core.db.executor.Executor;
+import com.pixelcat.core.db.executor.ExecutorFactory;
 import com.pixelcat.core.exception.PixelCatException;
 import com.pixelcat.core.zk.handle.ConfigNodeHandler;
 import com.pixelcat.core.zk.handle.DefaultConfigNodeHandler;
@@ -10,10 +13,12 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 集群选举
@@ -28,16 +33,22 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
     private String port;
     private ConfigNodeHandler configNodeHandler;
     private ApplicationContext applicationContext;
+    private ExecutorFactory executorFactory;
 
     @PostConstruct
     public void init(){
         this.configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
+        this.executorFactory = applicationContext.getBean(DefaultExecutorFactory.BEAN_NAME, ExecutorFactory.class);
         this.port = applicationContext.getEnvironment().getProperty("server.port");
         // 初始化的时候，先来一波竞选
-        preemption(null);
+        boolean preemption = preemption(null);
+        if (preemption){
+            // 竞选成功，初始化自己的节点
+            initZkNode(readFromDb());
+        }
         // 然后添加监听
         try {
-            configNodeHandler.addWatcher(this, MASTER_PATH);
+            configNodeHandler.addTreeWatcher(this, MASTER_PATH);
         } catch (Exception e) {
             throw new PixelCatException("Master节点监听失败！" + e.getMessage(), e);
         }
@@ -49,26 +60,25 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
     }
 
     @Override
-    protected void addEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
+    public void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent cacheEvent) {
+        String path = cacheEvent.getData().getPath();
+        String data = new String(cacheEvent.getData().getData());
+        if (log.isDebugEnabled()){
+            log.debug("节点【{}】【{}】被移除！", path, data);
+        }
 
-    }
-
-    @Override
-    protected void updateEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
-
-    }
-
-    @Override
-    protected void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
-        String data = new String(treeCacheEvent.getData().getData());
         // 主节点下线，剩余节点竞选
-        preemption(data);
+        boolean preemption = preemption(data);
+        if (preemption){
+            // 竞选成功，初始化自己的节点
+            initZkNode(readFromDb());
+        }
     }
 
     /**
      * 竞选：自己成功创建临时节点，自己就是Master
      */
-    private void preemption(String data) {
+    private boolean preemption(String data) {
         String value = null;
         try {
             InetAddress host = InetAddress.getLocalHost();
@@ -78,15 +88,48 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
                 // Master自己下线，不需要执行后面内容
                 if (value.equals(data)){
                     log.error("Master【{}】下线！", value);
-                    return;
+                    return false;
                 }
             }
             // 尝试把自己的地址写入path，这个地址作为客户端请求的配置中心地址
             configNodeHandler.createEphemeralPath(MASTER_PATH, value);
         } catch (UnknownHostException e) {
             log.error("竞选前期出现错误！", e);
+            return false;
         } catch (PixelCatException e) {
             log.info("节点【{}】竞选失败！", value);
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("节点【{}】竞选成功！", value);
+        return true;
+    }
+
+    /**
+     * 读取数据库
+     * @return
+     */
+    private List<NameSpace> readFromDb(){
+        Executor executor = executorFactory.newExecutor();
+        NameSpace record = new NameSpace();
+        record.setType(3);
+        record.setDeleteFlag(1);
+        List<NameSpace> list = executor.getList(NameSpace.class, record);
+        executor.close();
+        return list;
+    }
+
+    private void initZkNode(List<NameSpace> nameSpaces){
+        if (CollectionUtils.isEmpty(nameSpaces)){
+            log.warn("没有需要初始化的节点，请检查数据库！");
+        }else {
+            nameSpaces.forEach(e -> {
+                String node = e.getProjectId() + "/" + e.getEnvId() + "/" + e.getName();
+                configNodeHandler.createEphemeralPath(node, "INIT");
+            });
+            // 打印节点
+            log.info("初始化配置节点：\n*******************************\n{}\n*******************************", configNodeHandler.listPath());
         }
     }
 

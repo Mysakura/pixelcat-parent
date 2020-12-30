@@ -25,7 +25,7 @@ public abstract class AbstractZkNodeHandler implements TreeCacheListener {
         }
     }
 
-    protected abstract void addEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent);
-    protected abstract void updateEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent);
-    protected abstract void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent);
+    public void addEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent){};
+    public void updateEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent){};
+    public void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent){};
 }

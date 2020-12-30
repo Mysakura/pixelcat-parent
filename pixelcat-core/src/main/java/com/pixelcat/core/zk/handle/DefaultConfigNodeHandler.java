@@ -42,13 +42,18 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
     }
 
     @Override
-    public void addWatcher(TreeCacheListener listener) throws Exception {
+    public void addTreeWatcher(TreeCacheListener listener) throws Exception {
         zkServer.addWatcher(listener, rootPath);
     }
 
     @Override
-    public void addWatcher(TreeCacheListener listener, String path) throws Exception {
+    public void addTreeWatcher(TreeCacheListener listener, String path) throws Exception {
         zkServer.addWatcher(listener, rootPath + path);
+    }
+
+    @Override
+    public void removeTreeWatcher(String path) {
+        zkServer.removeTreeCacheWatcher(rootPath + path);
     }
 
     @Override
@@ -56,7 +61,7 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
         try {
             zkServer.createEphemeralPath(prePath(path), value);
         } catch (Exception e) {
-            log.error("创建临时节点失败！", e);
+            log.error("创建临时节点{}失败！", path, e);
             throw new PixelCatException("创建临时节点失败！Cause：" + e.getMessage());
         }
     }
@@ -66,7 +71,7 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
         try {
             zkServer.deletePath(prePath(path));
         } catch (Exception e) {
-            log.error("删除节点失败！", e);
+            log.error("删除节点{}失败！", path, e);
             throw new PixelCatException("删除节点失败！Cause：" + e.getMessage());
         }
     }
@@ -125,6 +130,8 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
 
     @Override
     public void destroy() throws Exception {
+        // 移除监听
+        zkServer.removeTreeCacheWatchers();
         // 删除建立的节点
         if (zkServer.isExit(rootPath)) {
             zkServer.deletePath(rootPath);

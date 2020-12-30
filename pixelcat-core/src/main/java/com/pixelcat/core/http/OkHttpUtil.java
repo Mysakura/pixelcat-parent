@@ -1,10 +1,10 @@
 package com.pixelcat.core.http;
 
 import com.pixelcat.core.exception.PixelCatException;
-import com.sun.istack.internal.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
@@ -40,13 +40,13 @@ public class OkHttpUtil {
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(@Nullable Call call, @Nullable IOException e) {
                 log.error("Http Get Request Failed. url:{},Cause:{}", url, e);
                 throw new PixelCatException("Http Get Request Failed.", e);
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@Nullable Call call, @Nullable Response response) throws IOException {
                 handler.deal(response.body().string());
             }
         });
@@ -60,13 +60,13 @@ public class OkHttpUtil {
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(@Nullable Call call, @Nullable IOException e) {
                 log.error("Http Post Request Failed. url:{},body:{},Cause:{}", url, bodyJson, e);
                 throw new PixelCatException("Http Post Request Failed.", e);
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(@Nullable Call call, @Nullable Response response) throws IOException {
                 handler.deal(response.body().string());
             }
         });

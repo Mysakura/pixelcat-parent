@@ -62,14 +62,14 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
         // zk监听
         try {
-            configNodeHandler.addWatcher(this, "/" + projectId + "/" + envId);
+            configNodeHandler.addTreeWatcher(this, "/" + projectId + "/" + envId);
         } catch (Exception e) {
             throw new PixelCatException("初始化zk节点监听失败！" + e.getMessage(), e);
         }
     }
 
     @Override
-    protected void addEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
+    public void addEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
         String path = treeCacheEvent.getData().getPath();
         String data = new String(treeCacheEvent.getData().getData());
         if (log.isDebugEnabled()) {
@@ -79,7 +79,7 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     }
 
     @Override
-    protected void updateEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
+    public void updateEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
         String path = treeCacheEvent.getData().getPath();
         String data = new String(treeCacheEvent.getData().getData());
         if (log.isDebugEnabled()){
@@ -89,7 +89,7 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     }
 
     @Override
-    protected void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
+    public void removeEvent(CuratorFramework curatorFramework, TreeCacheEvent treeCacheEvent) {
         String path = treeCacheEvent.getData().getPath();
         String data = new String(treeCacheEvent.getData().getData());
         if (log.isDebugEnabled()){

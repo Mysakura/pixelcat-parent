@@ -206,7 +206,7 @@ public class ZkServer implements EnvironmentAware {
     }
 
     /**
-     * 节点监听
+     * 节点监听：监听节点内容变更
      * @param listener
      * @param path
      * @throws Exception
@@ -229,6 +229,31 @@ public class ZkServer implements EnvironmentAware {
         cache.start();
         cache.getListenable().addListener(listener);
         TREE_LISTENER_MAP.put(path, cache);
+    }
+
+    /**
+     * 移除单个树监听
+     * @param path
+     * @throws Exception
+     */
+    public void removeTreeCacheWatcher(String path) {
+        TreeCache treeCache = TREE_LISTENER_MAP.get(path);
+        if (treeCache != null){
+            treeCache.close();
+            TREE_LISTENER_MAP.remove(path);
+        }
+    }
+
+    /**
+     * 移除所有监听
+     */
+    public void removeTreeCacheWatchers(){
+        if (!CollectionUtils.isEmpty(TREE_LISTENER_MAP)){
+            TREE_LISTENER_MAP.forEach((k,v) -> {
+                v.close();
+            });
+            TREE_LISTENER_MAP.clear();
+        }
     }
 
     /**
