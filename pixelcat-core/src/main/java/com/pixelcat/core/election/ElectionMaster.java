@@ -98,8 +98,6 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
         } catch (PixelCatException e) {
             log.info("节点【{}】竞选失败！", value);
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         log.info("节点【{}】竞选成功！", value);
         return true;
