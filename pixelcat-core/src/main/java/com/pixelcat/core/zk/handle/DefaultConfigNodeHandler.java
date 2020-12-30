@@ -67,6 +67,16 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
     }
 
     @Override
+    public void createPersistentPath(String path, String value) {
+        try {
+            zkServer.createPersistentPath(prePath(path), value);
+        } catch (Exception e) {
+            log.error("创建永久节点{}失败！", path, e);
+            throw new PixelCatException("创建永久节点失败！Cause：" + e.getMessage());
+        }
+    }
+
+    @Override
     public void deletePath(String path) {
         try {
             zkServer.deletePath(prePath(path));
@@ -133,9 +143,10 @@ public class DefaultConfigNodeHandler implements ConfigNodeHandler, ApplicationC
         // 移除监听
         zkServer.removeTreeCacheWatchers();
         // 删除建立的节点
-        if (zkServer.isExit(rootPath)) {
-            zkServer.deletePath(rootPath);
-        }
+        // Bug：在集群情况下，Master停止发出通知，下一任Master新建节点，如果此时上一任Master在执行Bean的销毁，也就是下面的逻辑，会把当前Master建立的节点删掉；因为delete是异步的，可能不在close之前执行完毕
+//        if (zkServer.isExit(rootPath)) {
+//            zkServer.deletePath(rootPath);
+//        }
         // 关闭连接
         zkServer.close();
     }

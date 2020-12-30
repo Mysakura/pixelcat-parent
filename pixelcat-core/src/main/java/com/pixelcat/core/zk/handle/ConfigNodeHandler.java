@@ -15,6 +15,8 @@ public interface ConfigNodeHandler {
 
     void createEphemeralPath(String path, String value);
 
+    void createPersistentPath(String path, String value);
+
     void deletePath(String path);
 
     String getPathValue(String path);

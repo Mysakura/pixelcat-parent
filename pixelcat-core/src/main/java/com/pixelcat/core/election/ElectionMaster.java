@@ -30,6 +30,7 @@ import java.util.List;
 public class ElectionMaster extends AbstractZkNodeHandler implements ApplicationContextAware {
     public static final String BEAN_NAME = "electionMaster";
 
+    private static final String LOCK_PATH = "/master_of_lock";
     public static final String MASTER_PATH = "/master_of_center";
     private String port;
     private ConfigNodeHandler configNodeHandler;
@@ -42,11 +43,7 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
         this.executorFactory = applicationContext.getBean(DefaultExecutorFactory.BEAN_NAME, ExecutorFactory.class);
         this.port = applicationContext.getEnvironment().getProperty("server.port");
         // 初始化的时候，先来一波竞选
-        boolean preemption = preemption(null);
-        if (preemption){
-            // 竞选成功，初始化自己的节点
-            initZkNode(readFromDb());
-        }
+        initData(null);
         // 然后添加监听
         try {
             configNodeHandler.addTreeWatcher(this, MASTER_PATH);
@@ -67,13 +64,37 @@ public class ElectionMaster extends AbstractZkNodeHandler implements Application
         if (log.isDebugEnabled()){
             log.debug("节点【{}】【{}】被移除！", path, data);
         }
-
         // 主节点下线，剩余节点竞选
-        boolean preemption = preemption(data);
-        if (preemption){
-            // 竞选成功，初始化自己的节点
-            initZkNode(readFromDb());
+        initData(data);
+    }
+
+    private void initData(String data){
+        if (lock()) {
+            // 只有成功创建Master节点，才可以初始化自己的数据
+            boolean preemption = preemption(data);
+            if (preemption) {
+                // 竞选成功，初始化自己的节点
+                initZkNode(readFromDb());
+            }
+            unlock();
         }
+    }
+
+    /**
+     * 临时节点，以防意外发生能及时释放锁
+     * @return
+     */
+    private boolean lock(){
+        try {
+            configNodeHandler.createEphemeralPath(LOCK_PATH, "LOCK");
+        } catch (PixelCatException e){
+            return false;
+        }
+        return true;
+    }
+
+    private void unlock(){
+        configNodeHandler.deletePath(LOCK_PATH);
     }
 
     /**
