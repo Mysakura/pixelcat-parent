@@ -22,8 +22,7 @@ import java.util.List;
 
 /**
  * 集群选举
- * 1. 利用选举，客户端可以不指定配置中心URL，因为这个信息会存储在node节点。好处在于用户不需要知道谁是Master，但是选举可能出现的情况要考虑周全
- * 2. 利用nginx负载均衡，客户端需要指定配置中心URL，好处在于省去了选举的逻辑，但是也增加了运维成本
+ * 客户端可以不指定配置中心URL，因为这个信息会存储在node节点。好处在于用户不需要知道谁是Master，但是选举可能出现的情况要考虑周全
  */
 @Slf4j
 public class ElectionMaster extends AbstractZkNodeHandler implements ApplicationContextAware {

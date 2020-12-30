@@ -18,17 +18,17 @@ public class PixelCatProperties {
     /**
      * 地址
      */
-    private String url = "";
+    private String url;
 
     /**
      * 用户名
      */
-    private String username = "";
+    private String username;
 
     /**
      * 密码
      */
-    private String password = "";
+    private String password;
 
     /**
      * zk地址
