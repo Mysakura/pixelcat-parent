@@ -91,11 +91,6 @@ public class PixelCatConfigEnvironmentProcessor implements EnvironmentPostProces
             source.put(PixelCatPropertiesConstant.ZK_SLEEP_TIME_MS,
                     environment.resolvePlaceholders(pixelCatProperties.getZkSleepTimeMs()));
         }
-
-        if (StringUtils.isNotBlank(pixelCatProperties.getCenterUrl())) {
-            source.put(PixelCatPropertiesConstant.CENTER_URL,
-                    environment.resolvePlaceholders(pixelCatProperties.getCenterUrl()));
-        }
         log.info("配置属性：{}", source);
         return new MapPropertySource("PixelCatPropertiesSource", source);
     }

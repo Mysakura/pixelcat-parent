@@ -45,7 +45,6 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
     private final ConcurrentLinkedQueue<BaseConfigEvent> deferredEvents = new ConcurrentLinkedQueue<>();
 
-    private String centerUrl;
     private String projectId;
     private String envId;
 
@@ -56,7 +55,6 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
     public void init(){
         this.configSubject = applicationContext.getBean(DefaultConfigSubject.BEAN_NAME, ConfigSubject.class);
         this.configNodeHandler = applicationContext.getBean(DefaultConfigNodeHandler.BEAN_NAME, ConfigNodeHandler.class);
-        this.centerUrl = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.CENTER_URL);
         this.projectId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.PROJECT_ID);
         this.envId = applicationContext.getEnvironment().getProperty(PixelCatPropertiesConstant.ENV_ID);
 
@@ -158,7 +156,7 @@ public class DefaultZkNodeHandler extends AbstractZkNodeHandler implements Appli
 
             // 2. 请求http，获取配置
             String bodyJson = String.format("{\"projectId\": \"%s\", \"envId\": \"%s\", \"name\": \"%s\"}", projectId, envId, parsedPath.namespace);
-            OkHttpUtil.getInstance().post(/*centerUrl*/centerUrl() + "/namespace/singleConfig", bodyJson, json -> {
+            OkHttpUtil.getInstance().post(centerUrl() + "/namespace/singleConfig", bodyJson, json -> {
                 log.info("获取配置：{}", json);
                 JSONObject jsonObject = JSON.parseObject(json);
                 String dataStr = jsonObject.getString("data");

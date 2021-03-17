@@ -52,12 +52,6 @@ public class PixelCatProperties {
     private String zkRootPath = "/pixelcat";
 
     /**
-     * 配置中心地址
-     */
-    @Deprecated
-    private String centerUrl = "http://127.0.0.1:8888";
-
-    /**
      * 客户端：项目ID
      */
     private String projectId;

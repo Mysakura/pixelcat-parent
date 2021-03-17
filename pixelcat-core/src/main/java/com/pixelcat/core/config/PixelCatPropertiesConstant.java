@@ -46,12 +46,6 @@ public interface PixelCatPropertiesConstant {
     String ZK_ROOT_PATH = "zkRootPath";
 
     /**
-     * 配置中心地址
-     */
-    @Deprecated
-    String CENTER_URL = "centerUrl";
-
-    /**
      * 客户端：项目ID
      */
     String PROJECT_ID = "projectId";

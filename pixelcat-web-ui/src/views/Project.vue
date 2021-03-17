@@ -221,7 +221,7 @@
       headers () {
         return [
           {
-            text: 'ID',
+            text: '项目ID',
             align: 'start',
             value: 'id',
           },
@@ -231,7 +231,7 @@
             value: 'name',
           },
           {
-            text: 'ID:环境',
+            text: '环境ID:名称',
             value: 'envList',
           },
           {

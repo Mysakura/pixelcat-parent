@@ -205,7 +205,7 @@
             headers () {
                 return [
                     {
-                        text: 'ID',
+                        text: '环境ID',
                         align: 'start',
                         value: 'id',
                     },
